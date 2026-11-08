@@ -9,11 +9,11 @@
   *A clean, local developer tool that maps out your PostgreSQL database, draws live entity diagrams, and seeds thousands of realistic rows without breaking foreign keys.*
 
   <p align="center">
-    <img src="https://img.shields.io/badge/Python-3.11+-10B981?logo=python&logoColor=white" alt="Python" />
-    <img src="https://img.shields.io/badge/FastAPI-0.110+-059669?logo=fastapi&logoColor=white" alt="FastAPI" />
-    <img src="https://img.shields.io/badge/PostgreSQL-14+-047857?logo=postgresql&logoColor=white" alt="PostgreSQL" />
-    <img src="https://img.shields.io/badge/Privacy-Zero%20Telemetry-10B981" alt="Privacy" />
-    <img src="https://img.shields.io/badge/License-MIT-065F46" alt="License" />
+    <img src="https://badgen.net/badge/Python/3.11+/10B981?icon=python" alt="Python 3.11+" />
+    <img src="https://badgen.net/badge/FastAPI/0.110+/059669?icon=fastapi" alt="FastAPI 0.110+" />
+    <img src="https://badgen.net/badge/PostgreSQL/14+/047857?icon=postgresql" alt="PostgreSQL 14+" />
+    <img src="https://badgen.net/badge/Privacy/Zero%20Telemetry/10B981" alt="Zero Telemetry" />
+    <img src="https://badgen.net/badge/License/MIT/065F46" alt="MIT License" />
   </p>
 
 </div>
@@ -165,5 +165,6 @@ Then open `http://localhost:8000` in your browser.
 
 ## License
 
-Distributed under the [MIT License](LICENSE). Free for personal and commercial use.
-Created by **Syed Haziq Zia Naqvi**.
+MIT License — Syed Haziq Zia Naqvi
+
+This project is licensed under the [MIT License](LICENSE) — see the [LICENSE](LICENSE) file for details. Free for personal, academic, and commercial use.
