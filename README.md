@@ -9,11 +9,11 @@
   *A clean, local developer tool that maps out your PostgreSQL database, draws live entity diagrams, and seeds thousands of realistic rows without breaking foreign keys.*
 
   <p align="center">
-    <img src="https://img.shields.io/badge/Python-3.11%2B-10B981?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-    <img src="https://img.shields.io/badge/FastAPI-0.110%2B-059669?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-    <img src="https://img.shields.io/badge/PostgreSQL-14%2B-047857?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-    <img src="https://img.shields.io/badge/Privacy-100%25%20Offline-10B981?style=for-the-badge" alt="Offline" />
-    <img src="https://img.shields.io/badge/License-MIT-065F46?style=for-the-badge" alt="License" />
+    <img src="https://img.shields.io/badge/Python-3.11+-10B981?logo=python&logoColor=white" alt="Python" />
+    <img src="https://img.shields.io/badge/FastAPI-0.110+-059669?logo=fastapi&logoColor=white" alt="FastAPI" />
+    <img src="https://img.shields.io/badge/PostgreSQL-14+-047857?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Privacy-Zero%20Telemetry-10B981" alt="Privacy" />
+    <img src="https://img.shields.io/badge/License-MIT-065F46" alt="License" />
   </p>
 
 </div>
@@ -56,6 +56,7 @@ structura-forge/
 ├── .gitignore                  # Keeps passwords, logs, and temp files safe
 ├── LICENSE                     # MIT License
 ├── README.md                   # You are here
+├── specs.md                    # Consolidated technical specifications
 ├── requirements.txt            # Python packages needed
 ├── structura.py                # Terminal tool & CLI entrypoint
 ├── erd_blueprint.md            # Exported visual diagram
