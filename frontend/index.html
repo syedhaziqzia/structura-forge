@@ -1,0 +1,2231 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STRUCTURA FORGE — PostgreSQL Schema &amp; Seeding Studio</title>
+  <link rel="icon" type="image/png" href="assets/structura-icon.png?v=3" />
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Mermaid.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+  <style>
+    :root, html, body {
+      color-scheme: dark;
+      --bg: #030303;
+      --surface: #090c0a;
+      --surface-hover: #0e1310;
+      --elevated: #111714;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(16, 185, 129, 0.35);
+      --emerald: #10B981;
+      --emerald-bright: #34D399;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: #F4F4F5;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* Completely remove ugly native browser number spinbuttons */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+      display: none !important;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield !important;
+      appearance: textfield !important;
+    }
+
+    /* Ensure all native inputs, selects, options, checkboxes stay dark-themed */
+    input, select, textarea, button, option {
+      color-scheme: dark;
+      font-family: inherit;
+    }
+    option {
+      background-color: #090c0a;
+      color: #F4F4F5;
+    }
+
+    /* Custom App-Themed Checkbox */
+    .app-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      background-color: #0d120f;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      display: inline-grid;
+      place-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .app-checkbox:checked {
+      background-color: #10B981;
+      border-color: #10B981;
+    }
+    .app-checkbox:checked::before {
+      content: "";
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid #022016;
+      border-bottom: 2px solid #022016;
+      transform: rotate(-45deg) translate(1px, -1px);
+    }
+    .app-checkbox:focus-visible {
+      outline: 2px solid #34D399;
+      outline-offset: 2px;
+    }
+
+    /* Subtle dot grid for ERD canvas */
+    .canvas-dots {
+      background-color: #050706;
+      background-image: radial-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* Studio Cards & Inputs */
+    .studio-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .studio-modal {
+      background: #0a0e0c;
+      border: 1px solid rgba(16, 185, 129, 0.22);
+      border-radius: 18px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 35px -10px rgba(16, 185, 129, 0.12);
+    }
+
+    .studio-input {
+      background: var(--elevated);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #F4F4F5;
+      border-radius: 12px;
+      transition: all 0.15s ease;
+    }
+    .studio-input:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: #141c18;
+    }
+    .studio-input:focus,
+    button:focus-visible {
+      border-color: var(--emerald);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22);
+    }
+
+    /* Primary Emerald Button */
+    .btn-emerald {
+      background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+      color: #021a11;
+      font-weight: 700;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      transition: all 0.15s var(--ease-out);
+    }
+    .btn-emerald:hover:not(:disabled) {
+      background: linear-gradient(180deg, #34D399 0%, #10B981 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.45);
+    }
+    .btn-emerald:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    /* Secondary Surface Button */
+    .btn-surface {
+      background: #111714;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: #E4E4E7;
+      transition: all 0.15s ease;
+    }
+    .btn-surface:hover:not(:disabled) {
+      background: #18211c;
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #FFFFFF;
+    }
+
+    /* Custom App-Themed Range Slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+      height: 28px;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      border-radius: 999px;
+      background: #141d18;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #34D399;
+      margin-top: -8px;
+      border: 3px solid #041f15;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.65);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      background: #6EE7B7;
+    }
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      border-radius: 999px;
+      background: #141d18;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #34D399;
+      border: 3px solid #041f15;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.65);
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #060807;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1c2621;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10B981;
+    }
+
+    /* Mermaid Clean Readable Overrides */
+    .mermaid .node rect,
+    .mermaid .node circle,
+    .mermaid .node polygon,
+    .mermaid .er.entityBox {
+      fill: #0b110e !important;
+      stroke: rgba(16, 185, 129, 0.55) !important;
+      stroke-width: 1.75px !important;
+      rx: 8px !important;
+      cursor: pointer;
+    }
+    .mermaid .er.attributeBoxOdd {
+      fill: #0f1713 !important;
+      stroke: rgba(255, 255, 255, 0.06) !important;
+    }
+    .mermaid .er.attributeBoxEven {
+      fill: #090e0b !important;
+      stroke: rgba(255, 255, 255, 0.06) !important;
+    }
+    .mermaid .relationshipLine,
+    .mermaid .er.relationshipLine {
+      stroke: rgba(52, 211, 153, 0.65) !important;
+      stroke-width: 2px !important;
+    }
+    .mermaid .er.relationshipLabelBox {
+      fill: #050706 !important;
+      opacity: 0.92 !important;
+    }
+    .mermaid .marker {
+      fill: #34D399 !important;
+      stroke: #34D399 !important;
+    }
+    .mermaid text {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 13.5px !important;
+      fill: #F4F4F5 !important;
+    }
+
+    /* Active Highlight in ERD */
+    .erd-active-node .er.entityBox {
+      stroke: #34D399 !important;
+      stroke-width: 3px !important;
+      filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.55));
+    }
+    .erd-parent-node .er.entityBox {
+      stroke: #FBBF24 !important;
+      stroke-width: 2.2px !important;
+      stroke-dasharray: 6 3;
+    }
+
+    /* Pan & Zoom Canvas */
+    #erd-wrapper {
+      cursor: grab;
+      transition: transform 0.15s ease-out;
+    }
+    #erd-wrapper.dragging {
+      cursor: grabbing;
+      transition: none;
+    }
+
+    /* Smooth Popover Animation */
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(6px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .anim-pop {
+      animation: popIn 0.16s var(--ease-out) forwards;
+    }
+  </style>
+</head>
+
+<body class="h-screen flex flex-col selection:bg-emerald-500/25 selection:text-emerald-200">
+
+  <!-- Screen Reader Announcement Region -->
+  <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Floating Toast Notifications -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
+
+  <!-- ======================================================== -->
+  <!-- 1. SPACIOUS, HIGH-READABILITY TOP HEADER                 -->
+  <!-- ======================================================== -->
+  <header class="h-[72px] border-b border-white/[0.08] bg-[#050706] shrink-0 flex items-center justify-between px-6 z-30">
+    <!-- Brand Identity -->
+    <div class="flex items-center space-x-3.5 cursor-pointer group" onclick="fitErdToScreen()" title="Click to fit diagram to screen">
+      <div class="w-12 h-12 rounded-xl bg-black border border-emerald-500/35 flex items-center justify-center p-1 overflow-hidden shadow-lg shadow-emerald-950/50 group-hover:border-emerald-400 transition">
+        <img id="custom-logo" src="assets/structura-icon.png?v=3" onerror="this.src='assets/Structura%20Logo.jpg'; this.onerror=function(){this.style.display='none'; document.getElementById('default-logo-svg').style.display='block';};" class="w-full h-full object-contain" alt="Structura Forge Logo" />
+        <svg id="default-logo-svg" class="w-6 h-6 text-emerald-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2.5">
+          <span class="text-xl font-bold tracking-[0.1em] text-white uppercase">Structu<span class="text-emerald-400">ra</span></span>
+          <span class="hidden sm:inline-block text-xs font-mono uppercase px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">Forge</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Controls: Connection Status Pill + Sync + Tools Menu -->
+    <div class="flex items-center space-x-3">
+      <!-- Connection Status Pill (Opens Connection & Mode Popover) -->
+      <div class="relative" id="conn-menu-wrapper">
+        <button onclick="toggleConnMenu(event)" id="connection-pill" class="flex items-center space-x-2.5 px-4 py-2 rounded-xl text-sm font-mono btn-surface">
+          <span id="connection-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400"></span>
+          <span id="connection-text" class="text-zinc-200 font-medium">localhost:5432</span>
+          <span id="connection-mode-tag" class="text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-semibold">Live</span>
+          <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
+
+        <!-- Connection Popover -->
+        <div id="conn-dropdown" class="hidden absolute right-0 mt-2.5 w-80 studio-modal p-3 z-50 text-sm anim-pop">
+          <div class="px-3 py-2 border-b border-white/[0.07] flex items-center justify-between">
+            <span class="font-semibold text-zinc-200">Database Environment</span>
+            <button onclick="openOnboardingModal()" class="text-xs font-mono text-emerald-400 hover:underline">Setup Guide</button>
+          </div>
+          <div class="p-1.5 space-y-1">
+            <button onclick="selectModeFromMenu('live')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <div class="flex items-center space-x-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                <div>
+                  <div class="font-medium text-zinc-100">Live PostgreSQL</div>
+                  <div class="text-xs text-zinc-400 font-mono">Introspect &amp; seed real DB</div>
+                </div>
+              </div>
+              <span class="text-xs font-mono text-emerald-400">Active</span>
+            </button>
+            <button onclick="selectModeFromMenu('demo')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <div class="flex items-center space-x-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-teal-300"></span>
+                <div>
+                  <div class="font-medium text-zinc-100">Preview Sandbox</div>
+                  <div class="text-xs text-zinc-400 font-mono">Built-in 6-table lab schema</div>
+                </div>
+              </div>
+              <span class="text-xs font-mono text-zinc-400">Demo</span>
+            </button>
+          </div>
+          <div class="border-t border-white/[0.07] pt-2 mt-1 px-1.5 flex flex-col gap-1">
+            <button onclick="openSettingsModal()" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-medium text-sm transition">
+              <span>Configure Connection (.env)</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Refresh / Sync Schema Button -->
+      <button onclick="fetchSchema()" title="Refresh Schema (Shortcut: R)" class="flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium btn-surface">
+        <svg id="refresh-icon" class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        <span class="hidden sm:inline">Refresh</span>
+      </button>
+
+      <!-- Tools & More Button (Keeps unusual tools hidden until clicked) -->
+      <div class="relative" id="main-menu-wrapper">
+        <button onclick="toggleMainMenu(event)" title="Tools &amp; Options" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-sm font-medium btn-surface">
+          <svg class="w-5 h-5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+
+        <!-- Tools Popover Menu -->
+        <div id="main-menu-dropdown" class="hidden absolute right-0 mt-2.5 w-72 studio-modal p-2 z-50 text-sm anim-pop">
+          <div class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-zinc-400 border-b border-white/[0.07]">
+            Workspace Tools
+          </div>
+          <div class="py-1 space-y-0.5">
+            <button onclick="openTableJumpModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <span class="text-zinc-200">Find / Jump to Table</span>
+              <kbd class="text-xs font-mono px-2 py-0.5 rounded bg-black/60 text-emerald-400 border border-white/10">Ctrl+K</kbd>
+            </button>
+            <button onclick="toggleMermaidModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <span class="text-zinc-200">View Mermaid.js Grammar</span>
+              <kbd class="text-xs font-mono px-2 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/10">G</kbd>
+            </button>
+            <button onclick="copyMermaidMarkdown()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <span class="text-zinc-200">Copy Mermaid Markdown</span>
+              <span class="text-xs font-mono text-emerald-400">Copy</span>
+            </button>
+            <button onclick="downloadSvg()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <span class="text-zinc-200">Export Diagram as SVG</span>
+              <span class="text-xs font-mono text-emerald-400">.svg</span>
+            </button>
+            <button onclick="toggleMinimap()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <span class="text-zinc-200">Toggle Radar Minimap</span>
+              <span id="menu-minimap-state" class="text-xs font-mono text-zinc-400">Off</span>
+            </button>
+          </div>
+          <div class="border-t border-white/[0.07] pt-1 mt-1 space-y-0.5">
+            <button onclick="initializeSampleLabSchema()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <span class="text-emerald-300 font-medium">Provision 6 Lab Tables</span>
+              <span class="text-xs font-mono text-emerald-400">SQL</span>
+            </button>
+            <button onclick="openOnboardingModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <span class="text-zinc-200">Quick-Start Checklist</span>
+              <span class="text-xs font-mono text-zinc-400">Guide</span>
+            </button>
+            <button onclick="openShortcutsModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
+              <span class="text-zinc-200">Keyboard Shortcuts</span>
+              <kbd class="text-xs font-mono px-2 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/10">?</kbd>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- 2. FALLBACK NOTICE BANNER (Shown when Live DB fails)     -->
+  <!-- ======================================================== -->
+  <div id="fallback-banner" class="hidden bg-amber-950/50 border-b border-amber-500/30 px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-sm shrink-0">
+    <div class="flex items-center space-x-3">
+      <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono text-xs font-semibold uppercase">Preview Mode</span>
+      <span id="fallback-banner-text" class="text-amber-100">Using sample data because the live PostgreSQL instance is unreachable. Fix <code class="font-mono text-amber-300">DATABASE_URL</code> to go live.</span>
+    </div>
+    <div class="flex items-center space-x-4 text-sm font-medium shrink-0">
+      <button onclick="openSettingsModal()" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-4">Configure DB</button>
+      <button onclick="selectModeFromMenu('live')" class="text-zinc-200 hover:text-white">Retry Live</button>
+      <button onclick="document.getElementById('fallback-banner').classList.add('hidden')" class="text-zinc-400 hover:text-white px-1" title="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 3. MAIN WORKSPACE (Left 60% ERD / Right 40% Seeder)      -->
+  <!-- ======================================================== -->
+  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden p-4 gap-4 min-h-0">
+
+    <!-- ---------------------------------------------------- -->
+    <!-- LEFT PANE (60%): LIVE ERD CANVAS                     -->
+    <!-- ---------------------------------------------------- -->
+    <section class="lg:w-[60%] flex flex-col studio-card overflow-hidden relative min-h-[420px] lg:min-h-0">
+
+      <!-- Clean Canvas Header Bar -->
+      <div class="h-14 px-5 border-b border-white/[0.07] bg-[#070a08] flex items-center justify-between shrink-0 z-10">
+        <div class="flex items-center space-x-3">
+          <h2 class="text-base font-semibold text-white">Schema Diagram</h2>
+          <span class="text-sm font-mono px-2.5 py-0.5 rounded-lg bg-white/[0.04] text-emerald-400 border border-white/[0.06]" id="table-count-badge">0 tables · 0 FKs</span>
+        </div>
+
+        <!-- Clean Contextual Canvas Actions -->
+        <div class="flex items-center space-x-2">
+          <button onclick="openTableJumpModal()" title="Search &amp; Jump to Table (Ctrl+K)" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl text-sm font-mono btn-surface">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <span>Search</span>
+            <kbd class="text-xs text-zinc-400 hidden sm:inline">⌘K</kbd>
+          </button>
+
+          <button onclick="copyMermaidMarkdown()" title="Copy Mermaid Syntax" class="px-3 py-1.5 rounded-xl text-sm font-medium btn-surface hidden sm:inline-flex items-center space-x-1.5">
+            <span>Copy DSL</span>
+          </button>
+
+          <button onclick="downloadSvg()" title="Download SVG Vector" class="px-3 py-1.5 rounded-xl text-sm font-medium btn-surface hidden sm:inline-flex items-center space-x-1.5">
+            <span>Export SVG</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Diagram Viewport -->
+      <div id="erd-viewport" class="flex-1 relative overflow-hidden canvas-dots flex items-center justify-center p-6">
+
+        <!-- Skeleton Loader while rendering -->
+        <div id="erd-skeleton" class="hidden absolute inset-0 z-20 bg-[#050706]/90 flex flex-col items-center justify-center space-y-4">
+          <div class="w-10 h-10 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin"></div>
+          <span class="text-sm font-mono text-zinc-300">Compiling Entity-Relationship Graph...</span>
+        </div>
+
+        <!-- Empty Schema Guide (Only visible if database has 0 tables) -->
+        <div id="erd-empty-state" class="hidden max-w-md w-full studio-modal p-6 text-center space-y-4 z-20">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 text-xl font-bold">∅</div>
+          <h3 class="text-lg font-semibold text-white">No Tables Found in <code class="font-mono text-emerald-400">public</code> Schema</h3>
+          <p class="text-sm text-zinc-300 leading-relaxed">
+            Your connected PostgreSQL database currently has no base tables. You can provision the 6-table reference schema (<code class="font-mono text-emerald-300">backend/test_schema.sql</code>) in one click.
+          </p>
+          <div class="flex items-center justify-center gap-3 pt-2">
+            <button onclick="initializeSampleLabSchema()" class="px-4 py-2.5 rounded-xl btn-emerald text-sm">Provision 6 Lab Tables</button>
+            <button onclick="selectModeFromMenu('demo')" class="px-4 py-2.5 rounded-xl btn-surface text-sm">Switch to Preview</button>
+          </div>
+        </div>
+
+        <!-- Zoomable & Pannable Mermaid Wrapper -->
+        <div id="erd-wrapper" class="w-full h-full flex items-center justify-center origin-center">
+          <div id="erd-output" class="mermaid flex items-center justify-center">
+            erDiagram
+          </div>
+        </div>
+
+        <!-- Optional Radar Minimap (Hidden by default; toggled from Tools menu) -->
+        <div id="erd-minimap" class="hidden absolute bottom-16 right-4 w-44 h-32 rounded-xl bg-[#070a08]/95 border border-emerald-500/30 p-2 shadow-2xl pointer-events-none flex flex-col justify-between z-10">
+          <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
+            <span>MINIMAP</span>
+            <span id="minimap-scale-lbl" class="text-emerald-400">100%</span>
+          </div>
+          <div id="minimap-preview" class="flex-1 flex items-center justify-center overflow-hidden opacity-75"></div>
+        </div>
+
+        <!-- Floating Bottom Zoom & Fit Bar (Large, readable controls) -->
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-[#070a08]/95 border border-white/[0.1] backdrop-blur-md font-mono text-sm shadow-2xl">
+          <button onclick="zoomErd(-0.15)" title="Zoom Out (-)" class="w-8 h-8 rounded-lg hover:bg-white/[0.08] text-zinc-300 hover:text-white flex items-center justify-center transition text-base font-bold">−</button>
+          <button id="zoom-pct-label" onclick="resetZoom()" title="Reset to 100% (0)" class="px-2.5 py-1 rounded-lg hover:bg-white/[0.08] text-zinc-200 hover:text-white transition min-w-[60px] text-center font-semibold">100%</button>
+          <button onclick="zoomErd(0.15)" title="Zoom In (+)" class="w-8 h-8 rounded-lg hover:bg-white/[0.08] text-zinc-300 hover:text-white flex items-center justify-center transition text-base font-bold">+</button>
+          <div class="h-4 w-px bg-white/15 mx-1"></div>
+          <button onclick="fitErdToScreen()" title="Fit Diagram to Screen (F)" class="px-3 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-semibold transition">Fit</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- RIGHT PANE (40%): DATA INJECTION STUDIO & CONSOLE    -->
+    <!-- ---------------------------------------------------- -->
+    <section class="lg:w-[40%] flex flex-col gap-4 min-h-0">
+
+      <!-- Card 1: Data Injection Studio -->
+      <div class="studio-card p-6 flex flex-col space-y-5 shrink-0">
+        <!-- Studio Header -->
+        <div class="flex items-center justify-between border-b border-white/[0.07] pb-3.5">
+          <div>
+            <h2 class="text-lg font-bold text-white">Data Injection Studio</h2>
+          </div>
+          <!-- Button to pop up Engine Options (Batch size & Dependency Chain) -->
+          <button type="button" onclick="openEngineOptionsModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-mono btn-surface" title="Configure Batch Size &amp; Dependency Seeding">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="lbl-engine-summary">Batch: 1,000 · Auto-Parent</span>
+            <span>⚙</span>
+          </button>
+        </div>
+
+        <!-- Step 1: Custom App-Themed Target Table Selector -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-semibold text-zinc-200">1. Target Table</label>
+            <!-- Single clean button that opens the unified Table Inspector Modal (Columns, Sample Preview, FK Chain) -->
+            <button type="button" onclick="openInspectorModal('columns')" class="text-sm font-medium text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 transition">
+              <span>Inspect Schema &amp; Sample</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Hidden native select kept synced for accessibility/form compatibility -->
+          <select id="select-table" class="sr-only" onchange="onTableSelected()" aria-label="Target Table"></select>
+
+          <!-- 100% Custom App-Themed Dropdown (Zero ugly native OS select menus!) -->
+          <div class="relative" id="custom-table-select-wrapper">
+            <button type="button" id="custom-table-trigger" onclick="toggleCustomTableDropdown(event)" class="w-full studio-input px-4 py-3.5 flex items-center justify-between text-left cursor-pointer">
+              <div class="flex items-center space-x-3 truncate">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></span>
+                <span id="custom-table-label" class="text-base font-mono font-semibold text-white truncate">Select table...</span>
+              </div>
+              <div class="flex items-center space-x-3 shrink-0">
+                <span id="custom-table-meta" class="text-xs font-mono px-2.5 py-1 rounded-md bg-black/50 text-zinc-300 border border-white/[0.07]">0 rows</span>
+                <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </button>
+
+            <!-- Custom Dropdown Menu -->
+            <div id="custom-table-menu" class="hidden absolute left-0 right-0 mt-2 studio-modal p-2 z-40 max-h-72 overflow-y-auto space-y-1 anim-pop"></div>
+          </div>
+        </div>
+
+        <!-- Step 2: Row Volume Controls (Zero Native Spinbuttons!) -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <label for="input-rows" class="text-sm font-semibold text-zinc-200">2. Rows to Generate</label>
+
+            <!-- Custom App-Themed Number Input with - / + Stepper Buttons -->
+            <div class="flex items-center bg-[#0d120f] border border-white/[0.12] rounded-xl p-1">
+              <button type="button" onclick="stepRowCount(-500)" class="w-8 h-8 rounded-lg hover:bg-white/[0.08] text-zinc-300 hover:text-white font-mono text-base font-bold flex items-center justify-center transition" title="Decrease by 500">−</button>
+              <input id="input-rows" type="number" min="100" max="50000" step="100" value="1000" oninput="syncRowsFromInput(this.value)" class="w-24 text-center bg-transparent border-none text-base font-mono font-bold text-emerald-400 focus:outline-none focus:ring-0" />
+              <button type="button" onclick="stepRowCount(500)" class="w-8 h-8 rounded-lg hover:bg-white/[0.08] text-zinc-300 hover:text-white font-mono text-base font-bold flex items-center justify-center transition" title="Increase by 500">+</button>
+            </div>
+          </div>
+
+          <!-- Smooth Emerald Range Slider -->
+          <input id="slider-rows" type="range" min="100" max="50000" step="100" value="1000" oninput="syncRowsFromSlider(this.value)" class="w-full" />
+
+          <!-- Quick Preset Pills -->
+          <div class="grid grid-cols-4 gap-2 pt-0.5">
+            <button type="button" onclick="setExactRows(500)" class="py-1.5 rounded-lg text-xs font-mono font-medium btn-surface">500</button>
+            <button type="button" onclick="setExactRows(1000)" class="py-1.5 rounded-lg text-xs font-mono font-medium btn-surface">1,000</button>
+            <button type="button" onclick="setExactRows(10000)" class="py-1.5 rounded-lg text-xs font-mono font-medium btn-surface">10,000</button>
+            <button type="button" onclick="setExactRows(50000)" class="py-1.5 rounded-lg text-xs font-mono font-medium btn-surface">50,000</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Primary CTA Button -->
+        <div class="space-y-2.5 pt-1">
+          <button id="btn-inject" onclick="handleInjectClick()" class="w-full py-3.5 px-5 rounded-xl btn-emerald text-base font-mono tracking-wide flex items-center justify-center space-x-2.5 disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg id="inject-spinner" class="w-5 h-5 animate-spin hidden text-slate-950" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+            <span id="inject-btn-text">Inject 1,000 Rows</span>
+          </button>
+
+          <!-- Live Batch Progress Bar -->
+          <div id="seed-progress-container" class="hidden space-y-1.5 pt-1">
+            <div class="w-full h-2 bg-[#141d18] rounded-full overflow-hidden">
+              <div id="seed-progress-bar" class="h-full bg-emerald-400 transition-all duration-150" style="width: 0%;"></div>
+            </div>
+            <div class="flex justify-between text-xs font-mono text-zinc-300">
+              <span id="seed-progress-label">Batch 0 / 0</span>
+              <span id="seed-progress-pct" class="text-emerald-400 font-semibold">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Telemetry & Activity Console -->
+      <div class="flex-1 studio-card p-5 flex flex-col min-h-[200px]">
+        <!-- Console Header -->
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.07] pb-3 mb-3 shrink-0">
+          <div class="flex items-center space-x-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-200">Telemetry Console</h3>
+            <span id="sim-metric-tag" class="hidden text-xs font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">Simulated</span>
+          </div>
+
+          <!-- Filter & History Triggers -->
+          <div class="flex items-center space-x-1.5 text-xs font-mono">
+            <button onclick="setLogFilter('ALL')" id="flt-all" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-semibold">All</button>
+            <button onclick="setLogFilter('ERROR')" id="flt-error" class="px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400">Errors</button>
+            <button onclick="setLogFilter('METRICS')" id="flt-metrics" class="px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400">Metrics</button>
+            <button onclick="openRunHistoryModal()" class="px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-300" title="View Run History">History (<span id="run-history-count">0</span>)</button>
+            <button onclick="clearLogs()" class="px-2 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400 hover:text-white">Clear</button>
+          </div>
+        </div>
+
+        <!-- Live Telemetry KPI Strip -->
+        <div class="grid grid-cols-3 gap-2.5 mb-3 shrink-0 font-mono">
+          <div class="p-2.5 rounded-xl bg-[#0d120f] border border-white/[0.05]">
+            <div class="text-xs text-zinc-400">STATUS</div>
+            <div id="metric-status" class="text-sm font-semibold text-zinc-200 mt-0.5">Idle</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-[#0d120f] border border-white/[0.05]">
+            <div class="text-xs text-zinc-400">INSERTED</div>
+            <div id="metric-rows" class="text-sm font-semibold text-emerald-400 mt-0.5">0 rows</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-[#0d120f] border border-white/[0.05]">
+            <div class="text-xs text-zinc-400">LATENCY</div>
+            <div id="metric-latency" class="text-sm font-semibold text-zinc-200 mt-0.5">0 ms</div>
+          </div>
+        </div>
+
+        <!-- Log Stream (Readable 13.5px Monospace) -->
+        <div id="telemetry-logs" class="flex-1 overflow-y-auto space-y-2 font-mono text-sm pr-1 select-text text-zinc-300">
+          <div class="text-zinc-400">[SYSTEM] Structura Forge Studio initialized.</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 1: UNIFIED TABLE INSPECTOR (COLUMNS, PREVIEW, FK)  -->
+  <!-- ======================================================== -->
+  <div id="modal-inspector" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-modal max-w-2xl w-full p-6 space-y-4 anim-pop">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
+        <div class="flex items-center space-x-3">
+          <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+          <h3 id="inspector-title" class="text-lg font-bold text-white font-mono">Table Inspector</h3>
+        </div>
+        <button onclick="closeModal('modal-inspector')" class="w-8 h-8 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center text-lg">✕</button>
+      </div>
+
+      <!-- Inspector Tabs -->
+      <div class="flex items-center space-x-2 border-b border-white/[0.07] pb-3 font-mono text-sm">
+        <button id="tab-btn-columns" onclick="switchInspectorTab('columns')" class="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 font-semibold">Columns &amp; Constraints</button>
+        <button id="tab-btn-preview" onclick="switchInspectorTab('preview')" class="px-4 py-2 rounded-xl hover:bg-white/[0.06] text-zinc-300">3-Row Faker Preview</button>
+        <button id="tab-btn-chain" onclick="switchInspectorTab('chain')" class="px-4 py-2 rounded-xl hover:bg-white/[0.06] text-zinc-300">Dependency Order</button>
+      </div>
+
+      <!-- Tab 1: Columns -->
+      <div id="inspector-tab-columns" class="max-h-80 overflow-y-auto space-y-2 pr-1"></div>
+
+      <!-- Tab 2: 3-Row Sample Preview -->
+      <div id="inspector-tab-preview" class="hidden space-y-3">
+        <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
+          <span>Synthetic preview generated by context-aware Faker heuristics:</span>
+          <button onclick="renderInspectorPreview()" class="text-emerald-400 hover:underline font-semibold">↻ Regenerate Sample</button>
+        </div>
+        <div id="inspector-preview-body" class="max-h-72 overflow-x-auto overflow-y-auto rounded-xl border border-white/[0.07] bg-black/40 p-3 font-mono text-sm"></div>
+      </div>
+
+      <!-- Tab 3: Dependency Order -->
+      <div id="inspector-tab-chain" class="hidden space-y-3">
+        <p class="text-sm text-zinc-300">Topological seeding sequence to satisfy foreign key constraints without parent violations:</p>
+        <div id="inspector-chain-body" class="max-h-64 overflow-y-auto space-y-2 font-mono text-sm"></div>
+      </div>
+
+      <div class="flex justify-end pt-3 border-t border-white/[0.08]">
+        <button onclick="closeModal('modal-inspector')" class="px-5 py-2 rounded-xl btn-surface text-sm font-medium">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 2: ENGINE OPTIONS (BATCH SIZE & AUTO-SEED PARENTS) -->
+  <!-- ======================================================== -->
+  <div id="modal-engine" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-modal max-w-md w-full p-6 space-y-5 anim-pop">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <h3 class="text-lg font-bold text-white">Seeder Engine Options</h3>
+        <button onclick="closeModal('modal-engine')" class="w-8 h-8 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+
+      <!-- Segmented Batch Size Control -->
+      <div class="space-y-2.5">
+        <label class="text-sm font-semibold text-zinc-200 block">Transaction Batch Size (<code class="font-mono text-emerald-400">execute_batch</code>)</label>
+        <p class="text-xs text-zinc-400">Controls how many rows are streamed per network packet to PostgreSQL.</p>
+        <div class="grid grid-cols-4 gap-2 pt-1 font-mono text-sm" id="batch-segment-group">
+          <button type="button" onclick="selectBatchSize(500)" data-batch="500" class="py-2.5 rounded-xl btn-surface">500</button>
+          <button type="button" onclick="selectBatchSize(1000)" data-batch="1000" class="py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">1,000</button>
+          <button type="button" onclick="selectBatchSize(2500)" data-batch="2500" class="py-2.5 rounded-xl btn-surface">2,500</button>
+          <button type="button" onclick="selectBatchSize(5000)" data-batch="5000" class="py-2.5 rounded-xl btn-surface">5,000</button>
+        </div>
+      </div>
+
+      <!-- Auto-seed missing parents -->
+      <div class="pt-3 border-t border-white/[0.08]">
+        <label class="flex items-start space-x-3 cursor-pointer">
+          <input id="chk-auto-seed-parents" type="checkbox" checked onchange="onEngineOptionChanged()" class="app-checkbox mt-0.5" />
+          <div>
+            <div class="text-sm font-semibold text-zinc-200">Auto-seed empty parent tables first</div>
+            <div class="text-xs text-zinc-400 mt-0.5">If a target table has foreign keys pointing to an empty parent table, automatically seed 50 parent rows first so the insert never fails.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="flex justify-end pt-3 border-t border-white/[0.08]">
+        <button onclick="closeModal('modal-engine')" class="px-5 py-2 rounded-xl btn-emerald text-sm">Save &amp; Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 3: QUICK TABLE SEARCH / JUMP (CTRL+K)              -->
+  <!-- ======================================================== -->
+  <div id="modal-jump" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center pt-24 p-4">
+    <div class="studio-modal max-w-md w-full p-4 space-y-3 font-mono anim-pop">
+      <div class="relative">
+        <input id="jump-search-input" type="text" oninput="filterJumpTables(this.value)" placeholder="Search table name..." class="w-full studio-input pl-4 pr-14 py-3 text-base" />
+        <kbd class="absolute right-3 top-3.5 text-xs px-2 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/10">ESC</kbd>
+      </div>
+      <div id="jump-table-list" class="max-h-64 overflow-y-auto space-y-1 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 4: LARGE RUN CONFIRMATION (> 25,000 ROWS)          -->
+  <!-- ======================================================== -->
+  <div id="modal-confirm-large" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-modal max-w-md w-full p-6 space-y-4 anim-pop">
+      <div class="flex items-center space-x-3">
+        <span class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center font-bold text-lg">!</span>
+        <h3 class="text-lg font-bold text-white">Confirm Bulk Injection</h3>
+      </div>
+      <p id="confirm-large-text" class="text-sm text-zinc-300 leading-relaxed"></p>
+      <div class="flex justify-end space-x-3 pt-2">
+        <button onclick="closeModal('modal-confirm-large')" class="px-4 py-2 rounded-xl btn-surface text-sm">Cancel</button>
+        <button onclick="confirmLargeRunProceed()" class="px-5 py-2 rounded-xl btn-emerald text-sm">Proceed with Bulk Seed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 5: RUN HISTORY                                     -->
+  <!-- ======================================================== -->
+  <div id="modal-history" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-modal max-w-lg w-full p-6 space-y-4 anim-pop">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <h3 class="text-lg font-bold text-white">Seeding Run History</h3>
+        <button onclick="closeModal('modal-history')" class="w-8 h-8 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <div id="run-history-list" class="max-h-72 overflow-y-auto space-y-2 font-mono text-sm">
+        <div class="text-zinc-500 text-center py-6">No seeding runs recorded in this session yet.</div>
+      </div>
+      <div class="flex justify-end pt-2 border-t border-white/[0.08]">
+        <button onclick="closeModal('modal-history')" class="px-5 py-2 rounded-xl btn-surface text-sm">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 6: COMPILED MERMAID.JS DSL                         -->
+  <!-- ======================================================== -->
+  <div id="modal-mermaid" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-modal max-w-2xl w-full p-6 space-y-4 font-mono anim-pop">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <span class="text-base font-bold text-white">Compiled Mermaid.js ERD Grammar</span>
+        <button onclick="closeModal('modal-mermaid')" class="w-8 h-8 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <pre id="raw-mermaid-code" class="p-4 rounded-xl bg-black/70 border border-white/[0.08] text-sm text-emerald-300 max-h-80 overflow-y-auto whitespace-pre select-text"></pre>
+      <div class="flex justify-between items-center pt-2 border-t border-white/[0.08]">
+        <button onclick="copyMermaidMarkdown()" class="px-4 py-2 rounded-xl btn-emerald text-sm">Copy Mermaid Code</button>
+        <button onclick="closeModal('modal-mermaid')" class="px-4 py-2 rounded-xl btn-surface text-sm">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 7: POSTGRESQL CONNECTION SETTINGS (.env)           -->
+  <!-- ======================================================== -->
+  <div id="modal-settings" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-modal max-w-md w-full p-6 space-y-4 anim-pop">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <h3 class="text-lg font-bold text-white">PostgreSQL Connection</h3>
+        <button onclick="closeModal('modal-settings')" class="w-8 h-8 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <div class="space-y-3.5 text-sm font-mono">
+        <div class="grid grid-cols-3 gap-3">
+          <div class="col-span-2 space-y-1">
+            <label class="text-xs text-zinc-400">HOST</label>
+            <input id="cfg-host" type="text" value="localhost" class="w-full studio-input px-3.5 py-2.5 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs text-zinc-400">PORT</label>
+            <input id="cfg-port" type="number" value="5432" class="w-full studio-input px-3.5 py-2.5 text-sm" />
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs text-zinc-400">DATABASE NAME</label>
+          <input id="cfg-database" type="text" value="postgres" class="w-full studio-input px-3.5 py-2.5 text-sm" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="text-xs text-zinc-400">USER</label>
+            <input id="cfg-user" type="text" value="postgres" class="w-full studio-input px-3.5 py-2.5 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs text-zinc-400">PASSWORD</label>
+            <input id="cfg-password" type="password" placeholder="Enter PostgreSQL password" class="w-full studio-input px-3.5 py-2.5 text-sm" />
+          </div>
+        </div>
+        <label class="flex items-center space-x-3 text-zinc-300 pt-1 cursor-pointer font-sans">
+          <input id="cfg-persist" type="checkbox" checked class="app-checkbox" />
+          <span class="text-sm">Save credentials to root <code class="font-mono text-emerald-400">.env</code> file</span>
+        </label>
+        <div id="cfg-feedback" class="hidden p-3 rounded-xl text-xs"></div>
+      </div>
+      <div class="flex justify-end space-x-3 pt-3 border-t border-white/[0.08]">
+        <button onclick="closeModal('modal-settings')" class="px-4 py-2 rounded-xl btn-surface text-sm">Cancel</button>
+        <button id="btn-save-cfg" onclick="saveAndTestConnection()" class="px-5 py-2 rounded-xl btn-emerald text-sm">Test &amp; Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 8: ONBOARDING CHECKLIST                            -->
+  <!-- ======================================================== -->
+  <div id="modal-onboarding" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-modal max-w-md w-full p-6 space-y-4 anim-pop">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <h3 class="text-lg font-bold text-white">Quick-Start Workflow</h3>
+        <button onclick="closeModal('modal-onboarding')" class="w-8 h-8 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <div class="space-y-3 text-sm">
+        <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.07] flex items-start justify-between gap-3">
+          <div>
+            <div class="font-semibold text-white">1. Connect PostgreSQL Instance</div>
+            <div class="text-xs text-zinc-400 mt-0.5">Verify credentials in <code class="font-mono text-emerald-400">.env</code> or use Preview Sandbox.</div>
+          </div>
+          <button onclick="closeModal('modal-onboarding'); openSettingsModal();" class="px-3 py-1.5 rounded-lg btn-surface text-xs font-mono shrink-0">Config</button>
+        </div>
+        <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.07] flex items-start justify-between gap-3">
+          <div>
+            <div class="font-semibold text-white">2. Provision or Sync Schema</div>
+            <div class="text-xs text-zinc-400 mt-0.5">Load existing tables or create the 6-table reference schema.</div>
+          </div>
+          <button onclick="closeModal('modal-onboarding'); initializeSampleLabSchema();" class="px-3 py-1.5 rounded-lg btn-surface text-xs font-mono shrink-0">Provision</button>
+        </div>
+        <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.07] flex items-start justify-between gap-3">
+          <div>
+            <div class="font-semibold text-white">3. Seed Constraint-Safe Rows</div>
+            <div class="text-xs text-zinc-400 mt-0.5">Pick any table on the right and click <strong class="text-emerald-400">Inject Rows</strong>.</div>
+          </div>
+          <button onclick="closeModal('modal-onboarding')" class="px-3 py-1.5 rounded-lg btn-emerald text-xs font-mono shrink-0">Go</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 9: KEYBOARD SHORTCUTS                              -->
+  <!-- ======================================================== -->
+  <div id="modal-shortcuts" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="studio-modal max-w-sm w-full p-6 space-y-4 font-mono text-sm anim-pop">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <span class="font-bold text-white text-base">Keyboard Shortcuts</span>
+        <button onclick="closeModal('modal-shortcuts')" class="w-8 h-8 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <div class="space-y-2.5 text-zinc-200">
+        <div class="flex justify-between items-center"><span>Search / Jump Table</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">Ctrl+K</kbd></div>
+        <div class="flex justify-between items-center"><span>Refresh Schema</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">R</kbd></div>
+        <div class="flex justify-between items-center"><span>Inject Mock Rows</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">Enter</kbd></div>
+        <div class="flex justify-between items-center"><span>View Mermaid Grammar</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">G</kbd></div>
+        <div class="flex justify-between items-center"><span>Fit Diagram to Screen</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">F</kbd></div>
+        <div class="flex justify-between items-center"><span>Zoom Canvas</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">+ / − / 0</kbd></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- APPLICATION JAVASCRIPT LOGIC                             -->
+  <!-- ======================================================== -->
+  <script>
+    // SQL Type Formatter
+    function formatShortSqlType(rawType, charMaxLen) {
+      const t = (rawType || 'text').toLowerCase().trim();
+      const map = {
+        'character varying': charMaxLen ? `varchar(${charMaxLen})` : 'varchar',
+        'varchar': charMaxLen ? `varchar(${charMaxLen})` : 'varchar',
+        'character': 'char',
+        'timestamp with time zone': 'timestamptz',
+        'timestamp without time zone': 'timestamp',
+        'time with time zone': 'timetz',
+        'time without time zone': 'time',
+        'double precision': 'float8',
+        'real': 'float4',
+        'smallint': 'int2',
+        'integer': 'int4',
+        'bigint': 'int8',
+        'boolean': 'bool',
+        'bigserial': 'bigserial',
+        'smallserial': 'smallserial',
+        'serial': 'serial',
+        'numeric': 'numeric',
+        'decimal': 'decimal',
+        'uuid': 'uuid',
+        'text': 'text',
+        'jsonb': 'jsonb',
+        'json': 'json',
+        'date': 'date'
+      };
+      return map[t] || t;
+    }
+
+    // Built-in 6-Table Lab Schema for Preview Sandbox Mode
+    const DEMO_SCHEMA_DATA = {
+      tables: [
+        {
+          table_name: "users",
+          row_count: 250,
+          columns: [
+            { name: "id", data_type: "uuid", is_nullable: false, is_pk: true, is_fk: false },
+            { name: "email", data_type: "character varying", char_max_len: 120, is_nullable: false, is_pk: false, is_fk: false },
+            { name: "full_name", data_type: "character varying", char_max_len: 100, is_nullable: false, is_pk: false, is_fk: false },
+            { name: "is_active", data_type: "boolean", is_nullable: false, is_pk: false, is_fk: false },
+            { name: "created_at", data_type: "timestamp with time zone", is_nullable: false, is_pk: false, is_fk: false }
+          ]
+        },
+        {
+          table_name: "categories",
+          row_count: 24,
+          columns: [
+            { name: "category_id", data_type: "serial", is_nullable: false, is_pk: true, is_fk: false, column_default: "nextval('categories_id_seq')" },
+            { name: "name", data_type: "character varying", char_max_len: 80, is_nullable: false, is_pk: false, is_fk: false },
+            { name: "parent_category_id", data_type: "integer", is_nullable: true, is_pk: false, is_fk: true, foreign_table: "categories", foreign_column: "category_id" }
+          ]
+        },
+        {
+          table_name: "products",
+          row_count: 180,
+          columns: [
+            { name: "product_id", data_type: "uuid", is_nullable: false, is_pk: true, is_fk: false },
+            { name: "category_id", data_type: "integer", is_nullable: false, is_pk: false, is_fk: true, foreign_table: "categories", foreign_column: "category_id" },
+            { name: "product_name", data_type: "character varying", char_max_len: 150, is_nullable: false, is_pk: false, is_fk: false },
+            { name: "unit_price", data_type: "numeric", is_nullable: false, is_pk: false, is_fk: false },
+            { name: "stock_qty", data_type: "integer", is_nullable: false, is_pk: false, is_fk: false }
+          ]
+        },
+        {
+          table_name: "orders",
+          row_count: 1200,
+          columns: [
+            { name: "order_id", data_type: "bigserial", is_nullable: false, is_pk: true, is_fk: false, column_default: "nextval('orders_order_id_seq')" },
+            { name: "user_id", data_type: "uuid", is_nullable: false, is_pk: false, is_fk: true, foreign_table: "users", foreign_column: "id" },
+            { name: "total_amount", data_type: "numeric", is_nullable: false, is_pk: false, is_fk: false },
+            { name: "order_date", data_type: "date", is_nullable: false, is_pk: false, is_fk: false },
+            { name: "shipping_address", data_type: "text", is_nullable: true, is_pk: false, is_fk: false }
+          ]
+        },
+        {
+          table_name: "order_items",
+          row_count: 3400,
+          columns: [
+            { name: "item_id", data_type: "bigserial", is_nullable: false, is_pk: true, is_fk: false, column_default: "nextval('order_items_id_seq')" },
+            { name: "order_id", data_type: "bigint", is_nullable: false, is_pk: false, is_fk: true, foreign_table: "orders", foreign_column: "order_id" },
+            { name: "product_id", data_type: "uuid", is_nullable: false, is_pk: false, is_fk: true, foreign_table: "products", foreign_column: "product_id" },
+            { name: "quantity", data_type: "smallint", is_nullable: false, is_pk: false, is_fk: false },
+            { name: "line_total", data_type: "numeric", is_nullable: false, is_pk: false, is_fk: false }
+          ]
+        },
+        {
+          table_name: "audit_logs",
+          row_count: 0,
+          columns: [
+            { name: "log_id", data_type: "uuid", is_nullable: false, is_pk: true, is_fk: false },
+            { name: "actor_user_id", data_type: "uuid", is_nullable: false, is_pk: false, is_fk: true, foreign_table: "users", foreign_column: "id" },
+            { name: "payload", data_type: "jsonb", is_nullable: false, is_pk: false, is_fk: false },
+            { name: "logged_at", data_type: "timestamp without time zone", is_nullable: false, is_pk: false, is_fk: false }
+          ]
+        }
+      ],
+      mermaid_syntax: `erDiagram
+    users {
+        uuid id PK
+        varchar email
+        varchar full_name
+        bool is_active
+        timestamptz created_at
+    }
+    categories {
+        serial category_id PK
+        varchar name
+        int4 parent_category_id FK
+    }
+    products {
+        uuid product_id PK
+        int4 category_id FK
+        varchar product_name
+        numeric unit_price
+        int4 stock_qty
+    }
+    orders {
+        bigserial order_id PK
+        uuid user_id FK
+        numeric total_amount
+        date order_date
+        text shipping_address
+    }
+    order_items {
+        bigserial item_id PK
+        int8 order_id FK
+        uuid product_id FK
+        int2 quantity
+        numeric line_total
+    }
+    audit_logs {
+        uuid log_id PK
+        uuid actor_user_id FK
+        jsonb payload
+        timestamp logged_at
+    }
+    categories ||--o{ categories : "parent_category_id"
+    categories ||--o{ products : "category_id"
+    orders ||--o{ order_items : "order_id"
+    products ||--o{ order_items : "product_id"
+    users ||--o{ audit_logs : "actor_user_id"
+    users ||--o{ orders : "user_id"`
+    };
+
+    // Application State
+    let appMode = 'auto';
+    let isDegradedFallback = false;
+    let schemaData = null;
+    let selectedBatchSize = 1000;
+    let currentScale = 1.0;
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let translateX = 0, translateY = 0;
+    let lastMermaidSyntax = '';
+    let currentLogFilter = 'ALL';
+    let runHistory = [];
+    let pendingLargeSeedConfirmed = false;
+    let minimapEnabled = false;
+
+    // Initialize Mermaid with Larger, High-Contrast Typography
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#050706',
+        primaryColor: '#0b110e',
+        primaryTextColor: '#F4F4F5',
+        primaryBorderColor: '#10B981',
+        lineColor: '#34D399',
+        secondaryColor: '#090e0b',
+        tertiaryColor: '#0f1713',
+        fontFamily: 'JetBrains Mono, monospace',
+        fontSize: '13.5px'
+      },
+      er: {
+        useMaxWidth: false,
+        layoutDirection: 'TB',
+        minEntityWidth: 130,
+        minEntityHeight: 85,
+        entityPadding: 15
+      }
+    });
+
+    // Screen Reader Announcer
+    function announceSR(msg) {
+      const el = document.getElementById('sr-announcer');
+      if (el) el.textContent = msg;
+    }
+
+    // Toast Notifications
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const border = type === 'error'
+        ? 'border-rose-500/40 text-rose-200'
+        : 'border-emerald-500/40 text-emerald-200';
+      toast.className = `px-4 py-3 rounded-xl bg-[#0a0f0d] border ${border} font-mono text-sm shadow-2xl anim-pop flex items-center space-x-2.5`;
+      toast.innerHTML = `<span class="${type === 'error' ? 'text-rose-400' : 'text-emerald-400'}">●</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 2800);
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Popover Toggles
+    function toggleConnMenu(e) {
+      e.stopPropagation();
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      document.getElementById('custom-table-menu').classList.add('hidden');
+      document.getElementById('conn-dropdown').classList.toggle('hidden');
+    }
+    function toggleMainMenu(e) {
+      e.stopPropagation();
+      document.getElementById('conn-dropdown').classList.add('hidden');
+      document.getElementById('custom-table-menu').classList.add('hidden');
+      document.getElementById('main-menu-dropdown').classList.toggle('hidden');
+    }
+    function toggleCustomTableDropdown(e) {
+      e.stopPropagation();
+      document.getElementById('conn-dropdown').classList.add('hidden');
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      document.getElementById('custom-table-menu').classList.toggle('hidden');
+    }
+
+    window.addEventListener('click', (e) => {
+      const conn = document.getElementById('conn-dropdown');
+      if (conn && !conn.contains(e.target)) conn.classList.add('hidden');
+      const menu = document.getElementById('main-menu-dropdown');
+      if (menu && !menu.contains(e.target)) menu.classList.add('hidden');
+      const tbl = document.getElementById('custom-table-menu');
+      if (tbl && !tbl.contains(e.target)) tbl.classList.add('hidden');
+    });
+
+    // Modal Triggers
+    async function openSettingsModal() {
+      document.getElementById('conn-dropdown').classList.add('hidden');
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      document.getElementById('cfg-feedback').classList.add('hidden');
+      try {
+        const res = await fetch('/api/config');
+        if (res.ok) {
+          const cfg = await res.json();
+          if (cfg.host) document.getElementById('cfg-host').value = cfg.host;
+          if (cfg.port) document.getElementById('cfg-port').value = cfg.port;
+          if (cfg.database) document.getElementById('cfg-database').value = cfg.database;
+          if (cfg.user) document.getElementById('cfg-user').value = cfg.user;
+        }
+      } catch (_) {}
+      openModal('modal-settings');
+    }
+    function openOnboardingModal() {
+      document.getElementById('conn-dropdown').classList.add('hidden');
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      openModal('modal-onboarding');
+    }
+    function openShortcutsModal() {
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      openModal('modal-shortcuts');
+    }
+    function toggleMermaidModal() {
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      openModal('modal-mermaid');
+    }
+    function openEngineOptionsModal() {
+      openModal('modal-engine');
+    }
+    function openRunHistoryModal() {
+      renderRunHistoryModal();
+      openModal('modal-history');
+    }
+    function openTableJumpModal() {
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      renderJumpList('');
+      openModal('modal-jump');
+      setTimeout(() => {
+        const inp = document.getElementById('jump-search-input');
+        inp.value = '';
+        inp.focus();
+      }, 50);
+    }
+
+    // Row Volume Synchronization (Input <-> Slider <-> Presets <-> Steppers)
+    function syncRowsFromInput(val) {
+      let num = parseInt(val, 10);
+      if (isNaN(num)) num = 1000;
+      num = Math.min(50000, Math.max(100, num));
+      document.getElementById('slider-rows').value = num;
+      updateInjectButtonLabel();
+    }
+
+    function syncRowsFromSlider(val) {
+      const num = parseInt(val, 10) || 1000;
+      document.getElementById('input-rows').value = num;
+      updateInjectButtonLabel();
+    }
+
+    function setExactRows(num) {
+      document.getElementById('input-rows').value = num;
+      document.getElementById('slider-rows').value = num;
+      updateInjectButtonLabel();
+    }
+
+    function stepRowCount(delta) {
+      const current = parseInt(document.getElementById('input-rows').value, 10) || 1000;
+      const next = Math.min(50000, Math.max(100, current + delta));
+      setExactRows(next);
+    }
+
+    // Engine Options (Batch Size & Auto-Seed Parents)
+    function selectBatchSize(size) {
+      selectedBatchSize = size;
+      document.querySelectorAll('#batch-segment-group button').forEach(btn => {
+        const b = parseInt(btn.getAttribute('data-batch'), 10);
+        if (b === size) {
+          btn.className = 'py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold';
+        } else {
+          btn.className = 'py-2.5 rounded-xl btn-surface';
+        }
+      });
+      onEngineOptionChanged();
+    }
+
+    function onEngineOptionChanged() {
+      const autoSeed = document.getElementById('chk-auto-seed-parents').checked;
+      document.getElementById('lbl-engine-summary').textContent =
+        `Batch: ${selectedBatchSize.toLocaleString()} · ${autoSeed ? 'Auto-Parent' : 'Strict FK'}`;
+      onTableSelected();
+    }
+
+    // Health Check & Environment State Clarity
+    async function checkHealth() {
+      if (appMode === 'demo' && !isDegradedFallback) return true;
+      try {
+        const res = await fetch('/api/health');
+        if (res.ok) {
+          const data = await res.json();
+          appMode = 'live';
+          isDegradedFallback = false;
+          const dbSuffix = data.database ? `/${data.database}` : '';
+          setPillState('live', `${data.host}:${data.port}${dbSuffix}`, 'Live');
+          document.getElementById('fallback-banner').classList.add('hidden');
+          document.getElementById('sim-metric-tag').classList.add('hidden');
+          return true;
+        } else {
+          if (appMode === 'auto') {
+            appMode = 'demo';
+            isDegradedFallback = true;
+            setPillState('degraded', 'localhost:5432', 'Preview (DB unreachable)');
+            document.getElementById('fallback-banner').classList.remove('hidden');
+            document.getElementById('sim-metric-tag').classList.remove('hidden');
+            logTelemetry('WARN', 'Live PostgreSQL unreachable — switched to Preview Sandbox.');
+            return false;
+          }
+          setPillState('offline', 'localhost:5432', 'Offline');
+          return false;
+        }
+      } catch (err) {
+        if (appMode === 'auto') {
+          appMode = 'demo';
+          isDegradedFallback = true;
+          setPillState('degraded', 'localhost:5432', 'Preview (DB unreachable)');
+          document.getElementById('fallback-banner').classList.remove('hidden');
+          document.getElementById('sim-metric-tag').classList.remove('hidden');
+          return false;
+        }
+        setPillState('offline', 'localhost:8000', 'Offline');
+        return false;
+      }
+    }
+
+    function setPillState(state, hostPort, tag) {
+      const dot = document.getElementById('connection-dot');
+      const text = document.getElementById('connection-text');
+      const modeTag = document.getElementById('connection-mode-tag');
+
+      text.textContent = hostPort;
+      modeTag.textContent = tag;
+
+      if (state === 'live') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400';
+        modeTag.className = 'text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-semibold';
+      } else if (state === 'preview') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-teal-300';
+        modeTag.className = 'text-xs px-2 py-0.5 rounded-md bg-teal-500/20 text-teal-200 font-semibold';
+      } else if (state === 'degraded') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+        modeTag.className = 'text-xs px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-semibold';
+      } else {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+        modeTag.className = 'text-xs px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-semibold';
+      }
+    }
+
+    async function setMode(mode) {
+      appMode = mode;
+      if (mode === 'demo') {
+        setPillState(isDegradedFallback ? 'degraded' : 'preview', 'localhost:5432', isDegradedFallback ? 'Preview (DB unreachable)' : 'Preview');
+        document.getElementById('sim-metric-tag').classList.remove('hidden');
+        await loadSchemaIntoUI(DEMO_SCHEMA_DATA);
+      } else {
+        const ok = await checkHealth();
+        if (ok) await fetchSchema();
+        else showToast('PostgreSQL unreachable — check credentials', 'error');
+      }
+    }
+
+    async function selectModeFromMenu(mode) {
+      document.getElementById('conn-dropdown').classList.add('hidden');
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      isDegradedFallback = false;
+      document.getElementById('fallback-banner').classList.add('hidden');
+      await setMode(mode);
+    }
+
+    // Topological Dependency Sort
+    function getTopologicalOrder(tables) {
+      if (!tables || !tables.length) return [];
+      const visited = new Set();
+      const order = [];
+      const tableMap = new Map(tables.map(t => [t.table_name, t]));
+
+      function visit(tName, stack = new Set()) {
+        if (visited.has(tName) || stack.has(tName)) return;
+        stack.add(tName);
+        const t = tableMap.get(tName);
+        if (t) {
+          t.columns.forEach(c => {
+            if (c.is_fk && c.foreign_table && c.foreign_table !== tName) {
+              visit(c.foreign_table, stack);
+            }
+          });
+          visited.add(tName);
+          order.push(tName);
+        }
+      }
+
+      tables.forEach(t => visit(t.table_name));
+      return order;
+    }
+
+    // Load Schema into UI
+    async function loadSchemaIntoUI(data) {
+      schemaData = data;
+      lastMermaidSyntax = schemaData.mermaid_syntax;
+
+      const tables = schemaData.tables || [];
+      let fkCount = 0;
+      tables.forEach(t => t.columns.forEach(c => { if (c.is_fk) fkCount++; }));
+
+      document.getElementById('table-count-badge').textContent = `${tables.length} tables · ${fkCount} FKs`;
+      document.getElementById('raw-mermaid-code').textContent = lastMermaidSyntax;
+
+      const emptyState = document.getElementById('erd-empty-state');
+      if (tables.length === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+
+      populateTableDropdown(tables);
+      await renderMermaidDiagram(lastMermaidSyntax);
+      highlightErdTable(document.getElementById('select-table').value);
+    }
+
+    async function fetchSchema() {
+      const refreshIcon = document.getElementById('refresh-icon');
+      const skeleton = document.getElementById('erd-skeleton');
+      refreshIcon.classList.add('animate-spin');
+      skeleton.classList.remove('hidden');
+
+      try {
+        if (appMode === 'demo') {
+          await new Promise(r => setTimeout(r, 140));
+          await loadSchemaIntoUI(DEMO_SCHEMA_DATA);
+          return;
+        }
+
+        const res = await fetch('/api/schema');
+        if (!res.ok) throw new Error('Failed to introspect database schema');
+        const liveData = await res.json();
+        await loadSchemaIntoUI(liveData);
+        logTelemetry('SUCCESS', `Introspected ${liveData.tables.length} base tables from public schema.`);
+      } catch (err) {
+        logTelemetry('ERROR', 'Schema introspection failed', err.message);
+        showToast('Failed to sync schema', 'error');
+      } finally {
+        refreshIcon.classList.remove('animate-spin');
+        skeleton.classList.add('hidden');
+      }
+    }
+
+    // Populate Both Hidden Select & Custom App-Themed Dropdown
+    function populateTableDropdown(tables) {
+      const select = document.getElementById('select-table');
+      const customMenu = document.getElementById('custom-table-menu');
+      const currentSelected = select.value;
+
+      select.innerHTML = '';
+      customMenu.innerHTML = '';
+
+      if (!tables || tables.length === 0) {
+        document.getElementById('custom-table-label').textContent = 'No tables available';
+        document.getElementById('custom-table-meta').textContent = '0 rows';
+        return;
+      }
+
+      const orderedNames = getTopologicalOrder(tables);
+      orderedNames.forEach((tName, idx) => {
+        const table = tables.find(t => t.table_name === tName);
+        if (!table) return;
+
+        const fkCount = table.columns.filter(c => c.is_fk).length;
+        const rowsFormatted = (table.row_count || 0).toLocaleString();
+
+        // Native option for accessibility
+        const opt = document.createElement('option');
+        opt.value = table.table_name;
+        opt.textContent = `${table.table_name} · ${rowsFormatted} rows · ${fkCount} FK`;
+        select.appendChild(opt);
+
+        // Custom App-Themed Item
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'w-full px-3.5 py-2.5 rounded-xl hover:bg-emerald-500/15 flex items-center justify-between text-left transition group';
+        item.innerHTML = `
+          <div class="flex items-center space-x-2.5 truncate">
+            <span class="text-xs font-mono text-zinc-500 w-5">${idx + 1}.</span>
+            <span class="text-sm font-mono font-semibold text-zinc-100 group-hover:text-emerald-300 truncate">${table.table_name}</span>
+          </div>
+          <div class="flex items-center space-x-2 text-xs font-mono shrink-0">
+            <span class="px-2 py-0.5 rounded bg-black/50 text-zinc-300">${rowsFormatted} rows</span>
+            ${fkCount > 0 ? `<span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300">${fkCount} FK</span>` : ''}
+          </div>
+        `;
+        item.onclick = () => {
+          selectTableByName(table.table_name);
+          customMenu.classList.add('hidden');
+        };
+        customMenu.appendChild(item);
+      });
+
+      if (currentSelected && tables.some(t => t.table_name === currentSelected)) {
+        select.value = currentSelected;
+      } else {
+        select.selectedIndex = 0;
+      }
+      onTableSelected();
+    }
+
+    function onTableSelected() {
+      const select = document.getElementById('select-table');
+      const tableName = select.value;
+      if (!schemaData || !tableName) return;
+
+      const tableMeta = schemaData.tables.find(t => t.table_name === tableName);
+      if (!tableMeta) return;
+
+      const fkCount = tableMeta.columns.filter(c => c.is_fk).length;
+      document.getElementById('custom-table-label').textContent = tableMeta.table_name;
+      document.getElementById('custom-table-meta').textContent =
+        `${(tableMeta.row_count || 0).toLocaleString()} rows · ${fkCount} FK`;
+
+      highlightErdTable(tableName);
+      updateInjectButtonLabel();
+    }
+
+    // Resolve all empty ancestor tables in topological dependency order (multi-hop safe)
+    function getEmptyAncestorTables(tableName) {
+      if (!schemaData || !schemaData.tables) return [];
+      const tableMap = new Map(schemaData.tables.map(t => [t.table_name, t]));
+      const ancestors = new Set();
+
+      function collectAncestors(currName, stack = new Set()) {
+        if (stack.has(currName)) return;
+        stack.add(currName);
+        const meta = tableMap.get(currName);
+        if (!meta) return;
+        meta.columns.forEach(col => {
+          if (col.is_fk && col.foreign_table && col.foreign_table !== currName) {
+            ancestors.add(col.foreign_table);
+            collectAncestors(col.foreign_table, stack);
+          }
+        });
+      }
+
+      collectAncestors(tableName);
+      const topoOrder = getTopologicalOrder(schemaData.tables);
+      return topoOrder
+        .filter(tName => ancestors.has(tName))
+        .map(tName => tableMap.get(tName))
+        .filter(meta => meta && (meta.row_count || 0) === 0);
+    }
+
+    function updateInjectButtonLabel() {
+      const tableName = document.getElementById('select-table').value;
+      const rowCount = parseInt(document.getElementById('input-rows').value, 10) || 1000;
+      const btn = document.getElementById('btn-inject');
+      const btnText = document.getElementById('inject-btn-text');
+
+      if (!schemaData || !tableName) {
+        btn.disabled = true;
+        btnText.textContent = 'Select a Table';
+        return;
+      }
+
+      const emptyAncestors = getEmptyAncestorTables(tableName);
+      const autoSeed = document.getElementById('chk-auto-seed-parents').checked;
+
+      if (emptyAncestors.length > 0 && !autoSeed) {
+        btn.disabled = true;
+        btnText.textContent = `Blocked: Parent '${emptyAncestors[0].table_name}' is empty`;
+      } else {
+        btn.disabled = false;
+        btnText.textContent = emptyAncestors.length > 0 && autoSeed
+          ? `Seed ${emptyAncestors.length} Parent${emptyAncestors.length > 1 ? 's' : ''} + ${rowCount.toLocaleString()} into ${tableName}`
+          : `Inject ${rowCount.toLocaleString()} Rows into ${tableName}`;
+      }
+    }
+
+    function selectTableByName(tableName) {
+      const select = document.getElementById('select-table');
+      if (select) {
+        select.value = tableName;
+        onTableSelected();
+      }
+    }
+
+    // Unified Table Inspector Modal (Columns, Sample Preview, Dependency Chain)
+    function openInspectorModal(defaultTab = 'columns') {
+      const tableName = document.getElementById('select-table').value;
+      if (!schemaData || !tableName) return;
+      document.getElementById('inspector-title').textContent = `Inspector: ${tableName}`;
+      renderInspectorColumns();
+      renderInspectorPreview();
+      renderInspectorChain();
+      switchInspectorTab(defaultTab);
+      openModal('modal-inspector');
+    }
+
+    function switchInspectorTab(tab) {
+      const tabs = ['columns', 'preview', 'chain'];
+      tabs.forEach(t => {
+        const panel = document.getElementById(`inspector-tab-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tab) {
+          panel.classList.remove('hidden');
+          btn.className = 'px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 font-semibold';
+        } else {
+          panel.classList.add('hidden');
+          btn.className = 'px-4 py-2 rounded-xl hover:bg-white/[0.06] text-zinc-300';
+        }
+      });
+    }
+
+    function renderInspectorColumns() {
+      const tableName = document.getElementById('select-table').value;
+      const tableMeta = schemaData?.tables.find(t => t.table_name === tableName);
+      if (!tableMeta) return;
+
+      const body = document.getElementById('inspector-tab-columns');
+      body.innerHTML = '';
+
+      tableMeta.columns.forEach(col => {
+        const isSeq = (col.column_default || '').toLowerCase().includes('nextval') ||
+                      col.is_identity ||
+                      ['serial', 'bigserial', 'smallserial'].includes((col.data_type || '').toLowerCase());
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/[0.06] font-mono text-sm';
+
+        let badges = '';
+        if (col.is_pk) badges += '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-xs font-semibold ml-2">🔑 PK</span>';
+        if (col.is_fk) badges += `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-xs font-semibold ml-2">🔗 FK → ${col.foreign_table}</span>`;
+        if (isSeq) badges += '<span class="px-2 py-0.5 rounded bg-white/[0.06] text-zinc-400 text-xs ml-2">Auto-Seq</span>';
+
+        row.innerHTML = `
+          <div class="flex items-center truncate mr-3">
+            <span class="text-white font-semibold">${col.name}</span>
+            ${badges}
+          </div>
+          <span class="text-zinc-400 shrink-0">${formatShortSqlType(col.data_type, col.char_max_len)}</span>
+        `;
+        body.appendChild(row);
+      });
+    }
+
+    function generateClientSampleValue(col) {
+      const isSeq = (col.column_default || '').toLowerCase().includes('nextval') ||
+                    col.is_identity ||
+                    ['serial', 'bigserial', 'smallserial'].includes((col.data_type || '').toLowerCase());
+      if (isSeq) return '<auto-seq>';
+      const t = (col.data_type || '').toLowerCase();
+      const n = (col.name || '').toLowerCase();
+      const rand = Math.floor(Math.random() * 900) + 100;
+      if (t.includes('uuid')) return `f47ac10b-58cc-${rand}`;
+      if (n.includes('email')) return `dev${rand}@structura.io`;
+      if (n.includes('name')) return ['Alex Rivera', 'Samira Khan', 'Jordan Lee'][rand % 3];
+      if (n.includes('address')) return `${rand} Emerald Ave`;
+      if (t.includes('bool')) return rand % 2 === 0 ? 'true' : 'false';
+      if (t.includes('numeric') || t.includes('decimal')) return (rand / 3.5).toFixed(2);
+      if (t.includes('int')) return String(rand % 50 + 1);
+      if (t.includes('date') || t.includes('time')) return '2026-11-08';
+      if (t.includes('json')) return '{"event":"seeded"}';
+      return `sample_${rand}`;
+    }
+
+    function renderInspectorPreview() {
+      const tableName = document.getElementById('select-table').value;
+      const tableMeta = schemaData?.tables.find(t => t.table_name === tableName);
+      if (!tableMeta) return;
+
+      const body = document.getElementById('inspector-preview-body');
+      let html = '<table class="w-full text-left border-collapse"><thead><tr class="border-b border-white/[0.1] text-emerald-400">';
+      tableMeta.columns.forEach(c => { html += `<th class="py-2 pr-4 font-semibold">${c.name}</th>`; });
+      html += '</tr></thead><tbody class="divide-y divide-white/[0.06] text-zinc-200">';
+      for (let i = 0; i < 3; i++) {
+        html += '<tr>';
+        tableMeta.columns.forEach(c => {
+          html += `<td class="py-2 pr-4 whitespace-nowrap">${generateClientSampleValue(c)}</td>`;
+        });
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      body.innerHTML = html;
+    }
+
+    function renderInspectorChain() {
+      const container = document.getElementById('inspector-chain-body');
+      if (!schemaData) return;
+      const order = getTopologicalOrder(schemaData.tables);
+      container.innerHTML = '';
+      order.forEach((tName, i) => {
+        const t = schemaData.tables.find(x => x.table_name === tName);
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/[0.06] text-zinc-200';
+        row.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs font-bold">${i + 1}</span>
+            <span class="font-semibold">${tName}</span>
+          </div>
+          <span class="text-zinc-400">${(t?.row_count || 0).toLocaleString()} rows</span>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    // Table Search / Jump Modal (Ctrl+K)
+    function renderJumpList(query) {
+      const container = document.getElementById('jump-table-list');
+      if (!schemaData) return;
+      const q = (query || '').toLowerCase().trim();
+      container.innerHTML = '';
+      const filtered = schemaData.tables.filter(t => t.table_name.toLowerCase().includes(q));
+      filtered.forEach(t => {
+        const item = document.createElement('button');
+        item.className = 'w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-emerald-500/20 hover:text-emerald-300 transition flex justify-between items-center';
+        item.innerHTML = `<span class="font-semibold text-white">${t.table_name}</span><span class="text-xs text-zinc-400">${(t.row_count || 0).toLocaleString()} rows</span>`;
+        item.onclick = () => {
+          selectTableByName(t.table_name);
+          closeModal('modal-jump');
+        };
+        container.appendChild(item);
+      });
+    }
+    function filterJumpTables(val) { renderJumpList(val); }
+
+    // Render Mermaid Diagram & Bind Interactive Node Clicks
+    async function renderMermaidDiagram(code) {
+      const container = document.getElementById('erd-output');
+      container.innerHTML = '';
+
+      if (!code || code.trim() === 'erDiagram') return;
+
+      try {
+        const id = 'mermaid-svg-' + Date.now();
+        const { svg } = await mermaid.render(id, code);
+        container.innerHTML = svg;
+
+        const svgEl = container.querySelector('svg');
+        if (svgEl && schemaData) {
+          const groups = svgEl.querySelectorAll('g.node, g[id*="entity-"]');
+          groups.forEach(g => {
+            g.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const txt = g.textContent || '';
+              const matched = schemaData.tables.find(t =>
+                g.id.toLowerCase().includes(t.table_name.toLowerCase()) ||
+                txt.trim().startsWith(t.table_name)
+              );
+              if (matched) {
+                selectTableByName(matched.table_name);
+                showToast(`Selected table: ${matched.table_name}`);
+              }
+            });
+          });
+        }
+        updateMinimap();
+        setTimeout(() => fitErdToScreen(), 60);
+      } catch (err) {
+        console.error('Mermaid render error:', err);
+      }
+    }
+
+    function highlightErdTable(tableName) {
+      const svgEl = document.querySelector('#erd-output svg');
+      if (!svgEl || !schemaData || !tableName) return;
+
+      const tableMeta = schemaData.tables.find(t => t.table_name === tableName);
+      const parentNames = new Set(
+        (tableMeta?.columns || []).filter(c => c.is_fk && c.foreign_table).map(c => c.foreign_table.toLowerCase())
+      );
+
+      const entityGroups = svgEl.querySelectorAll('g[id*="entity-"], g.node');
+      entityGroups.forEach(g => {
+        g.classList.remove('erd-active-node', 'erd-parent-node');
+        const gid = (g.id || '').toLowerCase();
+        if (gid.includes(tableName.toLowerCase())) {
+          g.classList.add('erd-active-node');
+        } else if ([...parentNames].some(p => gid.includes(p))) {
+          g.classList.add('erd-parent-node');
+        }
+      });
+    }
+
+    function toggleMinimap() {
+      minimapEnabled = !minimapEnabled;
+      const mm = document.getElementById('erd-minimap');
+      const lbl = document.getElementById('menu-minimap-state');
+      if (minimapEnabled) {
+        mm.classList.remove('hidden');
+        lbl.textContent = 'On';
+        lbl.className = 'text-xs font-mono text-emerald-400';
+        updateMinimap();
+      } else {
+        mm.classList.add('hidden');
+        lbl.textContent = 'Off';
+        lbl.className = 'text-xs font-mono text-zinc-400';
+      }
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+    }
+
+    function updateMinimap() {
+      if (!minimapEnabled) return;
+      const svgEl = document.querySelector('#erd-output svg');
+      const preview = document.getElementById('minimap-preview');
+      if (svgEl && preview) {
+        preview.innerHTML = svgEl.outerHTML;
+        const clone = preview.querySelector('svg');
+        if (clone) {
+          clone.style.width = '100%';
+          clone.style.height = '100%';
+        }
+      }
+    }
+
+    // Seeder Execution with Large-Run Confirmation & Auto-Parent Seeding
+    function confirmLargeRunProceed() {
+      pendingLargeSeedConfirmed = true;
+      closeModal('modal-confirm-large');
+      handleInjectClick();
+    }
+
+    async function handleInjectClick() {
+      const rowCount = Math.min(50000, Math.max(100, parseInt(document.getElementById('input-rows').value, 10) || 1000));
+      const tableName = document.getElementById('select-table').value;
+      if (!tableName) return;
+
+      // Confirm runs > 25,000 rows
+      if (rowCount > 25000 && !pendingLargeSeedConfirmed) {
+        const estSec = Math.max(1, Math.round(rowCount / 12000));
+        document.getElementById('confirm-large-text').textContent =
+          `You are about to generate and batch-insert ${rowCount.toLocaleString()} synthetic rows into '${tableName}' (estimated time: ~${estSec}s). Proceed?`;
+        openModal('modal-confirm-large');
+        return;
+      }
+      pendingLargeSeedConfirmed = false;
+
+      const btn = document.getElementById('btn-inject');
+      const spinner = document.getElementById('inject-spinner');
+      const btnText = document.getElementById('inject-btn-text');
+      const progContainer = document.getElementById('seed-progress-container');
+      const progBar = document.getElementById('seed-progress-bar');
+      const progLabel = document.getElementById('seed-progress-label');
+      const progPct = document.getElementById('seed-progress-pct');
+
+      btn.disabled = true;
+      spinner.classList.remove('hidden');
+      btnText.textContent = `Streaming ${rowCount.toLocaleString()} rows...`;
+      progContainer.classList.remove('hidden');
+
+      document.getElementById('metric-status').textContent = 'Streaming';
+      document.getElementById('metric-status').className = 'text-sm font-semibold text-amber-400 mt-0.5';
+
+      try {
+        const totalBatches = Math.ceil(rowCount / selectedBatchSize);
+
+        // Auto-seed empty ancestor parent tables in topological order if enabled
+        const tableMeta = schemaData.tables.find(t => t.table_name === tableName);
+        const autoSeed = document.getElementById('chk-auto-seed-parents').checked;
+        if (tableMeta && autoSeed) {
+          const emptyAncestors = getEmptyAncestorTables(tableName);
+          for (const parentMeta of emptyAncestors) {
+            if (appMode === 'demo') {
+              parentMeta.row_count = 50;
+              logTelemetry('INFO', `Auto-seeded 50 parent rows into '${parentMeta.table_name}'.`);
+            } else {
+              const pRes = await fetch('/api/seed', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ table_name: parentMeta.table_name, row_count: 50, batch_size: 50 })
+              });
+              if (pRes.ok) {
+                parentMeta.row_count = 50;
+                logTelemetry('INFO', `Auto-seeded 50 parent rows into '${parentMeta.table_name}'.`);
+              }
+            }
+          }
+        }
+
+        if (appMode === 'demo') {
+          for (let b = 1; b <= totalBatches; b++) {
+            const pct = Math.round((b / totalBatches) * 100);
+            progBar.style.width = `${pct}%`;
+            progLabel.textContent = `Batch ${b} / ${totalBatches}`;
+            progPct.textContent = `${pct}%`;
+            await new Promise(r => setTimeout(r, Math.min(55, Math.max(15, Math.round(180 / totalBatches)))));
+          }
+          const simLatency = (totalBatches * 14 + Math.random() * 9).toFixed(0);
+          if (tableMeta) tableMeta.row_count = (tableMeta.row_count || 0) + rowCount;
+
+          document.getElementById('metric-status').textContent = 'Committed';
+          document.getElementById('metric-status').className = 'text-sm font-semibold text-emerald-400 mt-0.5';
+          document.getElementById('metric-rows').textContent = `+${rowCount.toLocaleString()}`;
+          document.getElementById('metric-latency').textContent = `${simLatency} ms`;
+
+          recordRunHistory(tableName, rowCount, simLatency, 'SUCCESS');
+          logTelemetry('SUCCESS', `Injected ${rowCount.toLocaleString()} rows into ${tableName} in ${simLatency} ms.`);
+          announceSR(`Successfully injected ${rowCount} rows into ${tableName}`);
+          showToast(`Injected ${rowCount.toLocaleString()} rows into ${tableName}`);
+          populateTableDropdown(schemaData.tables);
+          return;
+        }
+
+        progBar.style.width = '50%';
+        progLabel.textContent = `Executing ${totalBatches} batches...`;
+        progPct.textContent = '50%';
+
+        const res = await fetch('/api/seed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ table_name: tableName, row_count: rowCount, batch_size: selectedBatchSize })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Batch execution failed');
+
+        progBar.style.width = '100%';
+        progPct.textContent = '100%';
+
+        document.getElementById('metric-status').textContent = 'Committed';
+        document.getElementById('metric-status').className = 'text-sm font-semibold text-emerald-400 mt-0.5';
+        document.getElementById('metric-rows').textContent = `+${data.rows_inserted.toLocaleString()}`;
+        document.getElementById('metric-latency').textContent = `${data.execution_time_ms} ms`;
+
+        recordRunHistory(data.table, data.rows_inserted, data.execution_time_ms, 'SUCCESS');
+        logTelemetry('SUCCESS', `Committed ${data.rows_inserted.toLocaleString()} rows into ${data.table} (${data.execution_time_ms} ms).`);
+        announceSR(`Committed ${data.rows_inserted} rows into ${data.table}`);
+        showToast(`Injected ${data.rows_inserted.toLocaleString()} rows into ${data.table}`);
+        await fetchSchema();
+      } catch (err) {
+        document.getElementById('metric-status').textContent = 'Rolled Back';
+        document.getElementById('metric-status').className = 'text-sm font-semibold text-rose-400 mt-0.5';
+        recordRunHistory(tableName, rowCount, 0, 'ERROR');
+        logTelemetry('ERROR', `Transaction rolled back on '${tableName}'`, err.message);
+        showToast(err.message.slice(0, 60), 'error');
+      } finally {
+        btn.disabled = false;
+        spinner.classList.add('hidden');
+        updateInjectButtonLabel();
+        setTimeout(() => progContainer.classList.add('hidden'), 700);
+      }
+    }
+
+    // Run History Management
+    function recordRunHistory(table, rows, ms, status) {
+      runHistory.unshift({
+        time: new Date().toLocaleTimeString(),
+        table,
+        rows,
+        ms,
+        status
+      });
+      document.getElementById('run-history-count').textContent = String(runHistory.length);
+    }
+
+    function renderRunHistoryModal() {
+      const list = document.getElementById('run-history-list');
+      if (runHistory.length === 0) {
+        list.innerHTML = '<div class="text-zinc-500 text-center py-6">No seeding runs recorded in this session yet.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      runHistory.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'p-3 rounded-xl bg-black/40 border border-white/[0.07] flex items-center justify-between';
+        const badge = item.status === 'SUCCESS'
+          ? '<span class="text-emerald-400 font-semibold">OK</span>'
+          : '<span class="text-rose-400 font-semibold">ERR</span>';
+        row.innerHTML = `
+          <div>
+            <div class="text-white font-semibold">${ badge } · ${item.table} (+${Number(item.rows).toLocaleString()} rows)</div>
+            <div class="text-xs text-zinc-400">${item.time} · ${item.ms} ms</div>
+          </div>
+          <button onclick="closeModal('modal-history'); selectTableByName('${item.table}'); setExactRows(${item.rows}); handleInjectClick();" class="px-3 py-1.5 rounded-lg btn-surface text-xs">Re-run</button>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    // HTML Escaping Helper for Safe DOM Rendering
+    function escapeHtml(raw) {
+      return String(raw ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Telemetry Console Logging & Filtering
+    function logTelemetry(type, msg, details = null) {
+      const container = document.getElementById('telemetry-logs');
+      const time = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.setAttribute('data-log-type', type);
+      if (currentLogFilter === 'ERROR' && type !== 'ERROR') {
+        div.classList.add('hidden');
+      } else if (currentLogFilter === 'METRICS' && type !== 'SUCCESS' && type !== 'METRICS') {
+        div.classList.add('hidden');
+      }
+      div.className = 'p-2.5 rounded-xl bg-black/30 border border-white/[0.04] leading-relaxed break-words';
+      const color = (type === 'SUCCESS' || type === 'METRICS')
+        ? 'text-emerald-400'
+        : type === 'ERROR'
+          ? 'text-rose-400'
+          : 'text-amber-400';
+
+      const safeMsg = escapeHtml(msg);
+      let html = `<div class="flex items-center justify-between gap-2"><div><span class="text-zinc-500">[${time}]</span> <span class="${color} font-bold">${escapeHtml(type)}</span> <span class="text-zinc-200">${safeMsg}</span></div>`;
+      if (details) {
+        const safeClip = String(details).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        html += `<button onclick="navigator.clipboard.writeText('${safeClip}'); showToast('Copied error detail');" class="text-xs px-2 py-0.5 rounded bg-white/[0.06] hover:bg-white/10 text-zinc-300 shrink-0">Copy</button>`;
+      }
+      html += `</div>`;
+      if (details) {
+        html += `<div class="text-xs text-rose-300/90 mt-1.5 pl-3 border-l-2 border-rose-500/40">${escapeHtml(details)}</div>`;
+      }
+      div.innerHTML = html;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function setLogFilter(filter) {
+      currentLogFilter = filter;
+      document.getElementById('flt-all').className = filter === 'ALL'
+        ? 'px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-semibold'
+        : 'px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400';
+      document.getElementById('flt-error').className = filter === 'ERROR'
+        ? 'px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 font-semibold'
+        : 'px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400';
+      const fltMetrics = document.getElementById('flt-metrics');
+      if (fltMetrics) {
+        fltMetrics.className = filter === 'METRICS'
+          ? 'px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-semibold'
+          : 'px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400';
+      }
+
+      document.querySelectorAll('#telemetry-logs > div[data-log-type]').forEach(el => {
+        const t = el.getAttribute('data-log-type');
+        if (filter === 'ERROR' && t !== 'ERROR') el.classList.add('hidden');
+        else if (filter === 'METRICS' && t !== 'SUCCESS' && t !== 'METRICS') el.classList.add('hidden');
+        else el.classList.remove('hidden');
+      });
+    }
+
+    function clearLogs() {
+      document.getElementById('telemetry-logs').innerHTML = '<div class="text-zinc-400">[SYSTEM] Console logs cleared.</div>';
+    }
+
+    // Connection Config (.env)
+    async function saveAndTestConnection() {
+      const btn = document.getElementById('btn-save-cfg');
+      const fb = document.getElementById('cfg-feedback');
+      btn.disabled = true;
+      btn.textContent = 'Testing...';
+      fb.classList.add('hidden');
+
+      try {
+        const payload = {
+          host: document.getElementById('cfg-host').value,
+          port: Number(document.getElementById('cfg-port').value) || 5432,
+          database: document.getElementById('cfg-database').value,
+          user: document.getElementById('cfg-user').value,
+          password: document.getElementById('cfg-password').value,
+          persist_env: document.getElementById('cfg-persist').checked
+        };
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Connection failed');
+
+        showToast(`Connected to ${data.database}`);
+        closeModal('modal-settings');
+        isDegradedFallback = false;
+        await setMode('live');
+      } catch (err) {
+        fb.className = 'p-3 rounded-xl bg-rose-950/70 text-rose-200 border border-rose-500/30 text-xs';
+        fb.textContent = err.message;
+        fb.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Test & Connect';
+      }
+    }
+
+    async function initializeSampleLabSchema() {
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      try {
+        if (appMode === 'demo') {
+          await loadSchemaIntoUI(DEMO_SCHEMA_DATA);
+          showToast('Loaded 6-table reference schema in Preview Sandbox');
+          return;
+        }
+        const res = await fetch('/api/init-lab', { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Failed to provision lab schema');
+        showToast('Provisioned 6 reference tables in PostgreSQL');
+        await fetchSchema();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function copyMermaidMarkdown() {
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      if (!lastMermaidSyntax) return;
+      navigator.clipboard.writeText(lastMermaidSyntax).then(() => {
+        showToast('Copied Mermaid.js ERD markdown to clipboard');
+      });
+    }
+
+    function downloadSvg() {
+      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      const svgEl = document.querySelector('#erd-output svg');
+      if (!svgEl) return;
+      const data = new XMLSerializer().serializeToString(svgEl);
+      const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `structura-erd-${Date.now()}.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Downloaded SVG diagram');
+    }
+
+    // Pan & Zoom Controls
+    function applyTransform() {
+      const wrapper = document.getElementById('erd-wrapper');
+      wrapper.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+      const pct = `${Math.round(currentScale * 100)}%`;
+      document.getElementById('zoom-pct-label').textContent = pct;
+      const mmScale = document.getElementById('minimap-scale-lbl');
+      if (mmScale) mmScale.textContent = pct;
+    }
+    function zoomErd(delta) {
+      currentScale = Math.min(3.0, Math.max(0.25, currentScale + delta));
+      applyTransform();
+    }
+    function resetZoom() {
+      currentScale = 1.0;
+      translateX = 0;
+      translateY = 0;
+      applyTransform();
+    }
+    function fitErdToScreen() {
+      const viewport = document.getElementById('erd-viewport');
+      const svgEl = document.querySelector('#erd-output svg');
+      if (!viewport || !svgEl) { resetZoom(); return; }
+      const vRect = viewport.getBoundingClientRect();
+      const bbox = svgEl.getBBox ? svgEl.getBBox() : { width: 800, height: 600 };
+      const pad = 70;
+      const scaleX = (vRect.width - pad) / Math.max(1, bbox.width);
+      const scaleY = (vRect.height - pad) / Math.max(1, bbox.height);
+      currentScale = Math.min(1.25, Math.max(0.4, Math.min(scaleX, scaleY)));
+      translateX = 0;
+      translateY = 0;
+      applyTransform();
+    }
+
+    const viewport = document.getElementById('erd-viewport');
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('button')) return;
+      isDragging = true;
+      startX = e.clientX - translateX;
+      startY = e.clientY - translateY;
+      document.getElementById('erd-wrapper').classList.add('dragging');
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      translateX = e.clientX - startX;
+      translateY = e.clientY - startY;
+      applyTransform();
+    });
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      document.getElementById('erd-wrapper').classList.remove('dragging');
+    });
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      zoomErd(e.deltaY < 0 ? 0.12 : -0.12);
+    }, { passive: false });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openTableJumpModal();
+        return;
+      }
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.fixed[id^="modal-"]').forEach(m => m.classList.add('hidden'));
+        document.getElementById('conn-dropdown').classList.add('hidden');
+        document.getElementById('main-menu-dropdown').classList.add('hidden');
+        document.getElementById('custom-table-menu').classList.add('hidden');
+        return;
+      }
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+
+      const k = e.key.toLowerCase();
+      if (k === 'r') { e.preventDefault(); fetchSchema(); }
+      else if (k === 'f') { e.preventDefault(); fitErdToScreen(); }
+      else if (k === 'g') { e.preventDefault(); toggleMermaidModal(); }
+      else if (k === '?' || (e.shiftKey && k === '/')) { e.preventDefault(); openShortcutsModal(); }
+      else if (k === '+' || k === '=') { e.preventDefault(); zoomErd(0.15); }
+      else if (k === '-') { e.preventDefault(); zoomErd(-0.15); }
+      else if (k === '0') { e.preventDefault(); resetZoom(); }
+      else if (k === 'enter') { e.preventDefault(); handleInjectClick(); }
+    });
+
+    // Startup Initialization
+    window.addEventListener('DOMContentLoaded', async () => {
+      await checkHealth();
+      await fetchSchema();
+      setInterval(() => {
+        if (appMode === 'live') checkHealth();
+      }, 15000);
+    });
+  </script>
+</body>
+</html>

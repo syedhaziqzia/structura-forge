@@ -1,0 +1,2 @@
+"""Structura backend package."""
+

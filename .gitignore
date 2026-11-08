@@ -1,0 +1,86 @@
+# =====================================================================
+# Structura Forge — Git Ignore Configuration
+# =====================================================================
+
+# Environment variables & secrets (NEVER commit live database passwords)
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+
+# Private keys, certificates & backups
+*.pem
+*.key
+*.pkcs12
+*.pfx
+*.p12
+*.crt
+*.cert
+*.sql.bak
+*.bak
+dump.sql
+export_*.sql
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution & build artifacts
+dist/
+build/
+*.egg-info/
+*.egg
+eggs/
+.eggs/
+wheels/
+*.whl
+
+# Testing & quality caches
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+
+# Logs & temporary run files
+*.log
+*.tmp
+*.ans
+*.temp
+scratch/
+logo_*.json
+
+# IDEs & code editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Operating System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
