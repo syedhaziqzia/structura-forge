@@ -165,6 +165,4 @@ Then open `http://localhost:8000` in your browser.
 
 ## License
 
-MIT License — Syed Haziq Zia Naqvi
-
-This project is licensed under the [MIT License](LICENSE) — see the [LICENSE](LICENSE) file for details. Free for personal, academic, and commercial use.
+MIT License © 2026 Syed Haziq Zia Naqvi. Engineered with privacy and precision for local PostgreSQL workflows.
