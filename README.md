@@ -11,11 +11,11 @@
   <br />
 
   <p align="center">
-    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11+-10B981?style=flat-square&logo=python&logoColor=white" alt="Python 3.11+" /></a>
-    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.110+-059669?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
-    <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-14+-047857?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" /></a>
-    <img src="https://img.shields.io/badge/Telemetry-Zero-10B981?style=flat-square" alt="Zero Telemetry" />
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-065F46?style=flat-square" alt="MIT License" /></a>
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11+-10B981?style=flat&logo=python&logoColor=white" alt="Python 3.11+" /></a>
+    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.110+-059669?style=flat&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
+    <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-14+-047857?style=flat&logo=postgresql&logoColor=white" alt="PostgreSQL" /></a>
+    <img src="https://img.shields.io/badge/Telemetry-Zero-10B981?style=flat" alt="Zero Telemetry" />
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-065F46?style=flat" alt="MIT License" /></a>
   </p>
 
 </div>
