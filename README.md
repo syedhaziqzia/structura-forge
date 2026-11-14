@@ -53,7 +53,6 @@ Everything runs on your computer (`localhost`). No internet connection is needed
 ```text
 structura-forge/
 ├── .env.example               # Template for your local PostgreSQL credentials
-├── .gitignore                  # Keeps passwords, logs, and temp files safe
 ├── LICENSE                     # MIT License
 ├── README.md                   # You are here
 ├── specs.md                    # Consolidated technical specifications
@@ -159,7 +158,6 @@ Then open `http://localhost:8000` in your browser.
 - **No Passwords on Screen:** Connection passwords are never displayed in the terminal or web dashboard.
 - **Safe Queries:** Uses strict SQL identifier quoting (`psycopg2.sql`) and name validation to prevent any SQL injection.
 - **Local Only:** Network access is restricted to `localhost` (`127.0.0.1`).
-- **Safe `.gitignore`:** Keeps your `.env` file, logs, backups, and credentials out of Git so they are never accidentally pushed to GitHub.
 
 ---
 
