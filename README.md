@@ -1,166 +1,193 @@
 <div align="center">
 
-  <img src="frontend/assets/structura-icon.png" alt="Structura Forge Logo" width="130" height="130" style="border-radius: 26px; border: 2px solid rgba(16, 185, 129, 0.4); box-shadow: 0 8px 32px rgba(16, 185, 129, 0.25);" />
+  <img src="frontend/assets/structura-icon.png" alt="Structura Forge" width="112" height="112" style="border-radius: 22px; border: 1px solid rgba(16, 185, 129, 0.35); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);" />
 
   # Structura Forge
 
-  **PostgreSQL Schema Visualizer & Fast Mock Data Seeder**
+  **PostgreSQL Schema Visualizer & Relational Synthetic Data Engine**
 
-  *A clean, local developer tool that maps out your PostgreSQL database, draws live entity diagrams, and seeds thousands of realistic rows without breaking foreign keys.*
+  *Inspect live schemas, generate relational entity diagrams, and stream high-volume mock data with strict referential integrity.*
+
+  <br />
 
   <p align="center">
-    <img src="https://badgen.net/badge/Python/3.11+/10B981?icon=python" alt="Python 3.11+" />
-    <img src="https://badgen.net/badge/FastAPI/0.110+/059669?icon=fastapi" alt="FastAPI 0.110+" />
-    <img src="https://badgen.net/badge/PostgreSQL/14+/047857?icon=postgresql" alt="PostgreSQL 14+" />
-    <img src="https://badgen.net/badge/Privacy/Zero%20Telemetry/10B981" alt="Zero Telemetry" />
-    <img src="https://badgen.net/badge/License/MIT/065F46" alt="MIT License" />
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11+-10B981?style=flat-square&logo=python&logoColor=white" alt="Python 3.11+" /></a>
+    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.110+-059669?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
+    <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-14+-047857?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" /></a>
+    <img src="https://img.shields.io/badge/Telemetry-Zero-10B981?style=flat-square" alt="Zero Telemetry" />
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-065F46?style=flat-square" alt="MIT License" /></a>
   </p>
 
 </div>
 
 ---
 
-## What is Structura Forge?
+## Overview
 
-When building apps with PostgreSQL, two things take too much time:
-1. **Understanding the database:** Figuring out how tables, primary keys, and foreign keys connect to each other.
-2. **Getting good test data:** Filling tables with realistic data without getting blocked by foreign key or unique constraint errors.
+Working with complex PostgreSQL schemas often presents two core developer friction points:
 
-**Structura Forge** solves both problems in one local tool. It gives you:
-- A **Terminal Interface (CLI)** you can run right from your command line.
-- A **Web Studio** you can open in your browser with an interactive visual graph.
-- A **Fast Mock Data Engine** that generates and inserts 1,000 to 50,000 rows in seconds.
+1. **Schema comprehension:** Tracing primary keys, composite foreign keys, and multi-level relationship hierarchies across dozens of tables.
+2. **Realistic data population:** Generating thousands of realistic records without triggering constraint violations, duplicate key collisions, or missing parent foreign key dependencies.
 
-Everything runs on your computer (`localhost`). No internet connection is needed, and no data is ever sent anywhere.
+**Structura Forge** provides a self-contained local workspace to address both. Available as both an interactive terminal console (TUI) and a browser-based visualization studio, it gives developers instantaneous clarity into their database topology alongside a high-throughput mock data pipeline.
+
+Everything runs strictly on `localhost`. No telemetry, no cloud relays, no outbound network requests.
 
 ---
 
-## Features
+## Key Capabilities
 
-- **Terminal Interface (TUI):** Clean, pitch-black and emerald green terminal menu with full schema trees, live progress bars, and ASCII blueprints.
-- **Web Dashboard:** Clean browser studio with an interactive diagram (zoom, pan, fit, and export as SVG).
-- **Smart Dependency Seeding:** If a table depends on a parent table that is empty, Structura Forge can automatically seed the parent first so inserts never fail.
-- **Fast Batch Streaming:** Uses PostgreSQL batch streaming (`execute_batch`) to insert thousands of rows in milliseconds.
-- **Realistic Data:** Uses `Faker` to create realistic names, emails, addresses, numbers, dates, timestamps, UUIDs, and JSON payloads.
-- **Unique-Safe:** Automatically tracks unique columns and adds unique tags so you never hit duplicate key errors.
-- **Instant Mermaid Diagrams:** Exports clean Mermaid.js diagram code right into `erd_blueprint.md` so you can view it in VS Code or GitHub.
-- **Built-in Test Database:** Includes a ready-to-use 6-table test schema (`backend/test_schema.sql`) so you can try all features even if you don't have your own database yet.
+- **Interactive Visual Topology:** Hardware-accelerated entity diagram canvas with pan, zoom, auto-fit, and direct SVG export.
+- **Topological Dependency Resolution:** Tables are analyzed as a directed acyclic graph (DAG). If a target table references an unpopulated parent, Structura Forge automatically resolves and seeds prerequisite records first.
+- **High-Throughput Batch Seeding:** Streams up to 50,000 realistic rows per batch using low-level PostgreSQL batch execution primitives (`execute_batch`).
+- **Context-Aware Synthesis:** Powered by `Faker` to produce realistic business entities (names, email addresses, geographical coordinates, temporal ranges, UUIDs, and valid JSON payloads).
+- **Collision-Resistant Constraints:** Analyzes `UNIQUE` constraints and dynamically scopes unique sets during generation to eliminate constraint rollback exceptions.
+- **Bi-directional Interfaces:** Use the dark-mode terminal UI (`Rich`) for quick local operations, or launch the single-page browser studio for interactive exploration.
+- **Mermaid.js Blueprint Generator:** Automatically extracts schema metadata and compiles Markdown-ready Mermaid diagrams (`erd_blueprint.md`).
+- **Offline Preview Sandbox:** Includes a 6-table e-commerce test schema with fallback mock fixtures so you can test features instantly without an active database connection.
 
 ---
 
-## Project Structure
+## Architecture & Layout
 
 ```text
 structura-forge/
-├── .env.example               # Template for your local PostgreSQL credentials
+├── structura.py                # Unified CLI & Terminal interface
+├── requirements.txt            # Core runtime dependencies
+├── specs.md                    # System architecture & API specifications
+├── erd_blueprint.md            # Generated Mermaid entity relationship diagram
+├── .env.example               # Environment configuration template
 ├── LICENSE                     # MIT License
-├── README.md                   # You are here
-├── specs.md                    # Consolidated technical specifications
-├── requirements.txt            # Python packages needed
-├── structura.py                # Terminal tool & CLI entrypoint
-├── erd_blueprint.md            # Exported visual diagram
 ├── backend/
-│   ├── main.py                 # FastAPI backend & data generator
-│   └── test_schema.sql         # Sample 6-table store database
+│   ├── main.py                 # FastAPI application & data generation engine
+│   └── test_schema.sql         # Reference 6-table test schema
 └── frontend/
-    ├── assets/
-    │   └── structura-icon.png  # Logo icon
-    └── index.html              # Single-page web dashboard
+    ├── index.html              # Responsive single-page application
+    └── assets/
+        └── structura-icon.png  # Brand icon asset
 ```
 
 ---
 
-## Quick Setup (3 Steps)
+## Quickstart
 
-### 1. Install dependencies
+### Prerequisites
+
+- Python 3.11 or higher
+- PostgreSQL 14+ (optional: sandbox fallback available if disconnected)
+
+### 1. Installation
+
+Clone the repository and set up a virtual environment:
 
 ```bash
-# Optional: create and activate a virtual environment
-python -m venv venv
-venv\Scripts\activate   # On Windows
-source venv/bin/activate # On macOS/Linux
+# Clone repository
+git clone https://github.com/your-username/structura-forge.git
+cd structura-forge
 
-# Install required packages
+# Create and activate virtual environment
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS / Linux
+source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Set your database connection
+### 2. Configure Environment
 
-Copy `.env.example` to `.env`:
+Create your local `.env` configuration:
+
 ```bash
+# Windows (PowerShell)
+Copy-Item .env.example .env
+
+# macOS / Linux
 cp .env.example .env
 ```
 
-Open `.env` and put in your PostgreSQL password:
+Define your database connection parameters in `.env`:
+
 ```env
 DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/postgres
 PORT=8000
 HOST=127.0.0.1
 ```
 
-> **Tip:** If your PostgreSQL is not running or your password is wrong, Structura Forge won't crash — it will ask if you want to use the built-in **Preview Sandbox** so you can test everything right away!
+> **Note:** If the configured PostgreSQL instance is unreachable, Structura Forge automatically prompts to launch in **Preview Sandbox Mode**, allowing you to explore all features safely.
 
 ---
 
-## How to Run
+## Usage
 
-### Method A: Run in the Terminal (TUI)
+### Terminal Interface (TUI)
+
+Launch the interactive console application:
 
 ```bash
 python structura.py
 ```
 
-This opens the interactive menu:
-- Press **`1`** to view your database schema as a color-coded tree.
-- Press **`2`** to export a visual Mermaid ERD blueprint to `erd_blueprint.md`.
-- Press **`3`** to seed any table with mock rows and watch the animated progress bar.
-- Press **`4`** to launch the Web Dashboard in your browser.
-- Press **`6`** to update connection credentials or create the test database tables.
-- Press **`5`** to exit.
+| Option | Function |
+| :---: | :--- |
+| `1` | Inspect database schema as a color-coded hierarchy tree |
+| `2` | Compile and export Mermaid ERD blueprint to `erd_blueprint.md` |
+| `3` | Execute relational mock data injection with real-time progress bars |
+| `4` | Spin up and open the local Web Studio in your default browser |
+| `6` | Reconfigure connection parameters or deploy the reference test schema |
+| `5` | Exit |
 
 ---
 
-### Method B: Run the Web Dashboard
+### Web Studio
+
+Launch the browser interface directly:
 
 ```bash
 python structura.py --web
 ```
-Or:
+
+Or run the server via Uvicorn:
+
 ```bash
 uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
-Then open `http://localhost:8000` in your browser.
 
-- **On the left:** Click and drag to pan the database diagram, use the zoom buttons or press `F` to fit to screen. Click any table box to select it.
-- **On the right:** Choose a table, pick how many rows you want (from 100 up to 50,000), and click **Inject Rows**.
-- **Inspect button:** Click **Inspect Schema & Sample** to see sample data and dependency order before inserting.
-- **Top Right Menu (☰):** Download the diagram as SVG, copy Mermaid code, or jump to any table (`Ctrl+K`).
+Navigate to `http://localhost:8000` to access the visual studio:
+
+- **Entity Graph Canvas:** Pan, zoom, inspect column data types, primary keys, and foreign key relationships. Press <kbd>F</kbd> to fit diagram to screen.
+- **Data Generator Panel:** Select any table, choose batch sizes (from 100 to 50,000 rows), preview sample payloads, and inject data with foreign key cascading.
+- **Top Bar Actions:** Export diagrams as clean SVG images, copy raw Mermaid markup, or invoke fuzzy search (<kbd>Ctrl</kbd> + <kbd>K</kbd>) to navigate large schemas.
 
 ---
 
 ## Keyboard Shortcuts (Web Studio)
 
-| Shortcut | What it does |
+| Key | Action |
 | :--- | :--- |
-| <kbd>Ctrl</kbd> + <kbd>K</kbd> | Search and jump to any table |
-| <kbd>R</kbd> | Refresh database schema |
-| <kbd>Enter</kbd> | Start seeding rows |
-| <kbd>F</kbd> | Fit diagram to screen |
+| <kbd>Ctrl</kbd> + <kbd>K</kbd> | Search and focus table |
+| <kbd>R</kbd> | Refresh schema topology |
+| <kbd>Enter</kbd> | Trigger data injection on active table |
+| <kbd>F</kbd> | Fit diagram to viewport |
 | <kbd>+</kbd> / <kbd>−</kbd> | Zoom in / Zoom out |
-| <kbd>0</kbd> | Reset zoom to 100% |
-| <kbd>G</kbd> | View Mermaid diagram code |
-| <kbd>Esc</kbd> | Close any popup window |
+| <kbd>0</kbd> | Reset zoom level to 100% |
+| <kbd>G</kbd> | View Mermaid ERD definition |
+| <kbd>Esc</kbd> | Dismiss active modal or overlay |
 
 ---
 
-## Security & Safety
+## Security Model
 
-- **No Passwords on Screen:** Connection passwords are never displayed in the terminal or web dashboard.
-- **Safe Queries:** Uses strict SQL identifier quoting (`psycopg2.sql`) and name validation to prevent any SQL injection.
-- **Local Only:** Network access is restricted to `localhost` (`127.0.0.1`).
+- **Zero Telemetry:** Operates exclusively offline on loopback (`127.0.0.1`). No metrics, diagnostics, or payloads are transmitted externally.
+- **Sanitized Execution:** Employs parameterized queries and strict SQL identifier escaping (`psycopg2.sql`) to prevent injection vulnerabilities.
+- **Credential Protection:** Connection strings and passwords are masked across CLI logs and web responses.
 
 ---
 
 ## License
 
-MIT License © 2026 Syed Haziq Zia Naqvi. Engineered with privacy and precision for local PostgreSQL workflows.
+Distributed under the [MIT License](LICENSE). Built for local PostgreSQL workflows.
