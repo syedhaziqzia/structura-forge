@@ -22,67 +22,82 @@
 
 ---
 
+<div align="center">
+
+```ansi
+[1;32m  ____ _____ ____  _   _  ____ _____ _   _ ____     _    [0m
+[1;32m / ___|_   _|  _ \| | | |/ ___|_   _| | | |  _ \   / \   [0m
+[1;32m \___ \ | | | |_) | | | | |     | | | | | | |_) | / _ \  [0m
+[1;32m  ___) || | |  _ <| |_| | |___  | | | |_| |  _ < / ___ \ [0m
+[1;32m |____/ |_| |_| \_\\___/ \____| |_|  \___/|_| \_/_/   \_\[0m
+
+  [1;37mPostgreSQL Architecture Mapping & High-Velocity Seeder[0m
+  [30;42;1m [ LIVE CONNECTED ] [0m [1;32mpostgres@127.0.0.1:5432/postgres[0m
+```
+
+</div>
+
+---
+
 ## Overview
 
 Working with complex PostgreSQL schemas often presents two core developer friction points:
-
 1. **Schema comprehension:** Tracing primary keys, composite foreign keys, and multi-level relationship hierarchies across dozens of tables.
 2. **Realistic data population:** Generating thousands of realistic records without triggering constraint violations, duplicate key collisions, or missing parent foreign key dependencies.
 
-**Structura Forge** provides a self-contained local workspace to address both. Available as both an interactive terminal console (TUI) and a browser-based visualization studio, it gives developers instantaneous clarity into their database topology alongside a high-throughput mock data pipeline.
-
-Everything runs strictly on `localhost`. No telemetry, no cloud relays, no outbound network requests.
+**Structura Forge** provides a self-contained local workspace to address both via two complementary interfaces: an **Interactive Terminal (TUI)** and a **Local Web Studio**. Everything runs strictly on `localhost` with zero telemetry and zero cloud dependencies.
 
 ---
 
-## Key Capabilities
+## Interfaces
 
-- **Interactive Visual Topology:** Hardware-accelerated entity diagram canvas with pan, zoom, auto-fit, and direct SVG export.
-- **Topological Dependency Resolution:** Tables are analyzed as a directed acyclic graph (DAG). If a target table references an unpopulated parent, Structura Forge automatically resolves and seeds prerequisite records first.
-- **High-Throughput Batch Seeding:** Streams up to 50,000 realistic rows per batch using low-level PostgreSQL batch execution primitives (`execute_batch`).
-- **Context-Aware Synthesis:** Powered by `Faker` to produce realistic business entities (names, email addresses, geographical coordinates, temporal ranges, UUIDs, and valid JSON payloads).
-- **Collision-Resistant Constraints:** Analyzes `UNIQUE` constraints and dynamically scopes unique sets during generation to eliminate constraint rollback exceptions.
-- **Bi-directional Interfaces:** Use the dark-mode terminal UI (`Rich`) for quick local operations, or launch the single-page browser studio for interactive exploration.
-- **Mermaid.js Blueprint Generator:** Automatically extracts schema metadata and compiles Markdown-ready Mermaid diagrams (`erd_blueprint.md`).
-- **Offline Preview Sandbox:** Includes a 6-table e-commerce test schema with fallback mock fixtures so you can test features instantly without an active database connection.
+### 1. Terminal Console (TUI)
+Designed for speed and keyboard-driven workflows directly in your shell:
+- Launch via `python structura.py`.
+- Color-coded schema trees, relationship mapping, and live ASCII diagrams.
+- Real-time animated progress bars during multi-batch row injection.
+- Option to generate Mermaid ERD blueprints (`erd_blueprint.md`) on demand.
+
+### 2. Local Web Studio (`http://localhost:8000`)
+Designed for visual inspection and interactive operations:
+- Launch via `python structura.py --web` (or `uvicorn backend.main:app --port 8000`).
+- Canvas with pan, zoom (<kbd>+</kbd> / <kbd>−</kbd>), auto-fit (<kbd>F</kbd>), and instant SVG export.
+- Quick table lookup with fuzzy search (<kbd>Ctrl</kbd> + <kbd>K</kbd>).
+- Seeding drawer to preview generated sample rows and inject 100 to 50,000 rows with single-click execution.
 
 ---
 
-## Architecture & Layout
+## Database Setup & Reference Test Schema
 
-```text
-structura-forge/
-├── structura.py                # Unified CLI & Terminal interface
-├── requirements.txt            # Core runtime dependencies
-├── specs.md                    # System architecture & API specifications
-├── erd_blueprint.md            # Generated Mermaid entity relationship diagram
-├── .env.example               # Environment configuration template
-├── LICENSE                     # MIT License
-├── backend/
-│   ├── main.py                 # FastAPI application & data generation engine
-│   └── test_schema.sql         # Reference 6-table test schema
-└── frontend/
-    ├── index.html              # Responsive single-page application
-    └── assets/
-        └── structura-icon.png  # Brand icon asset
+Structura Forge works with your existing PostgreSQL databases or with the built-in reference schema provided in this repository.
+
+### Built-in 6-Table Test Schema
+The repository includes a ready-to-use e-commerce schema located at [`backend/test_schema.sql`](backend/test_schema.sql) covering realistic relational patterns:
+- **`users`** &rarr; **`orders`** &rarr; **`order_items`** &larr; **`products`** &larr; **`categories`** (self-referencing parent category)
+- **`audit_logs`** with `jsonb` payloads and foreign key references
+
+#### Option A: Initialize Directly via TUI
+1. Run `python structura.py`.
+2. Choose **`6`** (Connection & Test Database Setup).
+3. Confirm deployment — Structura Forge will automatically execute `test_schema.sql` on your target database.
+
+#### Option B: Initialize via `psql`
+```bash
+psql -U postgres -d postgres -f backend/test_schema.sql
 ```
+
+#### Option C: Offline Preview Sandbox
+If PostgreSQL is offline or credentials are not yet configured, Structura Forge automatically prompts to enter **Preview Sandbox Mode**. This uses built-in schema fixtures so you can explore all visual diagrams and seeding workflows immediately.
 
 ---
 
 ## Quickstart
 
-### Prerequisites
-
-- Python 3.11 or higher
-- PostgreSQL 14+ (optional: sandbox fallback available if disconnected)
-
 ### 1. Installation
-
-Clone the repository and set up a virtual environment:
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/structura-forge.git
+git clone https://github.com/syedhaziqzia/structura-forge.git
 cd structura-forge
 
 # Create and activate virtual environment
@@ -100,7 +115,7 @@ pip install -r requirements.txt
 
 ### 2. Configure Environment
 
-Create your local `.env` configuration:
+Copy the example environment configuration:
 
 ```bash
 # Windows (PowerShell)
@@ -110,7 +125,7 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-Define your database connection parameters in `.env`:
+Set your database credentials in `.env`:
 
 ```env
 DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/postgres
@@ -118,56 +133,36 @@ PORT=8000
 HOST=127.0.0.1
 ```
 
-> **Note:** If the configured PostgreSQL instance is unreachable, Structura Forge automatically prompts to launch in **Preview Sandbox Mode**, allowing you to explore all features safely.
-
 ---
 
-## Usage
+## Usage Guide
 
-### Terminal Interface (TUI)
-
-Launch the interactive console application:
+### Terminal User Interface (TUI)
 
 ```bash
 python structura.py
 ```
 
-| Option | Function |
+| Key | Action |
 | :---: | :--- |
 | `1` | Inspect database schema as a color-coded hierarchy tree |
 | `2` | Compile and export Mermaid ERD blueprint to `erd_blueprint.md` |
 | `3` | Execute relational mock data injection with real-time progress bars |
-| `4` | Spin up and open the local Web Studio in your default browser |
-| `6` | Reconfigure connection parameters or deploy the reference test schema |
+| `4` | Launch and open the local Web Studio in your browser |
+| `6` | Configure connection settings or deploy the built-in test database |
 | `5` | Exit |
 
 ---
 
-### Web Studio
-
-Launch the browser interface directly:
+### Local Web Studio
 
 ```bash
 python structura.py --web
 ```
 
-Or run the server via Uvicorn:
+Open `http://localhost:8000` in your browser.
 
-```bash
-uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-Navigate to `http://localhost:8000` to access the visual studio:
-
-- **Entity Graph Canvas:** Pan, zoom, inspect column data types, primary keys, and foreign key relationships. Press <kbd>F</kbd> to fit diagram to screen.
-- **Data Generator Panel:** Select any table, choose batch sizes (from 100 to 50,000 rows), preview sample payloads, and inject data with foreign key cascading.
-- **Top Bar Actions:** Export diagrams as clean SVG images, copy raw Mermaid markup, or invoke fuzzy search (<kbd>Ctrl</kbd> + <kbd>K</kbd>) to navigate large schemas.
-
----
-
-## Keyboard Shortcuts (Web Studio)
-
-| Key | Action |
+| Shortcut | Action |
 | :--- | :--- |
 | <kbd>Ctrl</kbd> + <kbd>K</kbd> | Search and focus table |
 | <kbd>R</kbd> | Refresh schema topology |
@@ -177,6 +172,27 @@ Navigate to `http://localhost:8000` to access the visual studio:
 | <kbd>0</kbd> | Reset zoom level to 100% |
 | <kbd>G</kbd> | View Mermaid ERD definition |
 | <kbd>Esc</kbd> | Dismiss active modal or overlay |
+
+---
+
+## Project Structure
+
+```text
+structura-forge/
+├── structura.py                # Unified CLI & Terminal interface
+├── requirements.txt            # Python dependencies
+├── specs.md                    # Technical specification & architecture
+├── erd_blueprint.md            # Exported Mermaid entity diagram
+├── .env.example               # Environment variables template
+├── LICENSE                     # MIT License
+├── backend/
+│   ├── main.py                 # FastAPI backend & data generator engine
+│   └── test_schema.sql         # 6-table reference test database
+└── frontend/
+    ├── index.html              # Web Studio interface
+    └── assets/
+        └── structura-icon.png  # Application icon
+```
 
 ---
 
