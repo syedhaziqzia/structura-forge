@@ -214,6 +214,98 @@ def parse_dsn_summary(dsn: str) -> str:
         return "localhost:5432/postgres"
 
 
+CANCEL_TOKENS = {"b", "back", "cancel", "q", "quit"}
+
+
+def is_cancel_input(value: str) -> bool:
+    """Returns True when the user enters a back/cancel navigation keyword."""
+    return value.strip().lower() in CANCEL_TOKENS
+
+
+def get_live_env_status() -> Tuple[str, bool, Optional[int]]:
+    """Checks PostgreSQL reachability with a fast 1s timeout and counts public base tables."""
+    dsn = get_database_url()
+    dsn_summary = parse_dsn_summary(dsn)
+    conn = None
+    try:
+        conn = psycopg2.connect(dsn, connect_timeout=1)
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT COUNT(*)
+                FROM information_schema.tables
+                WHERE table_schema = 'public'
+                  AND table_type = 'BASE TABLE';
+                """
+            )
+            table_count = int(cur.fetchone()[0])
+        return dsn_summary, True, table_count
+    except Exception:
+        return dsn_summary, False, None
+    finally:
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+
+def prompt_int_or_cancel(
+    prompt_label: str,
+    default: int,
+    min_val: Optional[int] = None,
+    max_val: Optional[int] = None,
+) -> Optional[int]:
+    """Prompts for an integer while allowing 'b'/'back'/'cancel'/'q' to return cleanly."""
+    while True:
+        raw = Prompt.ask(
+            f"{prompt_label} [{MUTED_TEXT}](or 'b' to cancel)[/]",
+            default=str(default),
+        ).strip()
+        if is_cancel_input(raw):
+            return None
+        try:
+            val = int(raw)
+        except ValueError:
+            console.print(
+                f"[bold {ERROR_RED}][X] Enter a valid integer, or type 'b' / 'cancel' to return.[/]"
+            )
+            continue
+        if min_val is not None:
+            val = max(min_val, val)
+        if max_val is not None:
+            val = min(max_val, val)
+        return val
+
+
+def prompt_confirm_or_cancel(prompt_label: str, default: bool = True) -> Optional[bool]:
+    """Asks a yes/no confirmation while allowing 'b'/'back'/'cancel'/'q' to cancel (returns None)."""
+    default_hint = "Y/n" if default else "y/N"
+    while True:
+        raw = Prompt.ask(
+            f"{prompt_label} [{MUTED_TEXT}]({default_hint}, or 'b' to cancel)[/]",
+            default="y" if default else "n",
+        ).strip().lower()
+        if raw in ("b", "back", "cancel", "q", "quit"):
+            return None
+        if raw in ("y", "yes"):
+            return True
+        if raw in ("n", "no"):
+            return False
+        console.print(
+            f"[bold {ERROR_RED}][X] Enter 'y', 'n', or 'b' to cancel.[/]"
+        )
+
+
+def pause_before_menu() -> None:
+    """Pauses after an action so the user can read results before re-rendering the Control Deck."""
+    console.print()
+    try:
+        console.input(f"[{MUTED_TEXT}]Press Enter to return to Control Deck...[/]")
+    except (EOFError, KeyboardInterrupt):
+        pass
+
+
 def render_error_card(title: str, error: Exception, hint: Optional[str] = None) -> None:
     """Renders a clean, Obsidian & Crimson/Amber error card without raw tracebacks."""
     dsn_summary = parse_dsn_summary(get_database_url())
@@ -588,7 +680,7 @@ def compile_mermaid_erd(tables: List[Dict[str, Any]]) -> str:
 # =====================================================================
 # OPTION [1]: VIEW SCHEMA TREE
 # =====================================================================
-def action_view_schema_tree() -> None:
+def action_view_schema_tree() -> bool:
     """Queries PostgreSQL information_schema and renders a Rich Tree (Gold PKs, Emerald FKs)."""
     try:
         with console.status(
@@ -604,10 +696,10 @@ def action_view_schema_tree() -> None:
         ):
             tables = FALLBACK_SCHEMA_TABLES
         else:
-            return
+            return False
     except psycopg2.Error as exc:
         render_error_card("Database Query Error", exc)
-        return
+        return True
 
     if not tables:
         console.print(
@@ -624,7 +716,7 @@ def action_view_schema_tree() -> None:
             default=True,
         ):
             provision_lab_schema_interactive()
-        return
+        return True
 
     total_cols = sum(len(t["columns"]) for t in tables)
     total_fks = sum(1 for t in tables for c in t["columns"] if c["is_fk"])
@@ -693,6 +785,7 @@ def action_view_schema_tree() -> None:
             padding=(1, 2),
         )
     )
+    return True
 
 
 def provision_lab_schema_interactive() -> None:
@@ -715,19 +808,20 @@ def provision_lab_schema_interactive() -> None:
         render_error_card("Provisioning Failed", exc)
 
 
-def configure_env_interactive() -> None:
+def configure_env_interactive() -> bool:
     """Interactive prompt to update .env PostgreSQL connection settings and optionally provision test_schema.sql."""
     parsed = urlparse(get_database_url())
     default_host = parsed.hostname or "localhost"
     default_port = parsed.port or 5432
     default_db = (parsed.path or "/postgres").lstrip("/") or "postgres"
     default_user = parsed.username or "postgres"
+    default_pw = parsed.password or "postgres"
 
     console.print()
     console.print(
         Panel(
             f"[bold white]Configure your local PostgreSQL credentials for [{EMERALD_BRIGHT}].env[/].[/]\n"
-            f"[{MUTED_TEXT}]Press Enter on any prompt to keep the current value.[/]",
+            f"[{MUTED_TEXT}]Press Enter to keep the current value, or type 'b' / 'back' / 'cancel' at any prompt to return.[/]",
             title=f"[bold {EMERALD_BRIGHT}][ POSTGRESQL CONNECTION & TEST SCHEMA SETUP ][/]",
             border_style=EMERALD,
             box=box.SQUARE,
@@ -735,15 +829,48 @@ def configure_env_interactive() -> None:
         )
     )
 
-    host = Prompt.ask(f"[bold {EMERALD_BRIGHT}]PostgreSQL Host[/]", default=default_host).strip()
-    port = IntPrompt.ask(f"[bold {EMERALD_BRIGHT}]PostgreSQL Port[/]", default=default_port)
-    database = Prompt.ask(f"[bold {EMERALD_BRIGHT}]Database Name[/]", default=default_db).strip()
-    user = Prompt.ask(f"[bold {EMERALD_BRIGHT}]Database User[/]", default=default_user).strip()
-    password = Prompt.ask(
-        f"[bold {EMERALD_BRIGHT}]Database Password[/]",
-        password=True,
-        default=parsed.password or "postgres",
+    host = Prompt.ask(
+        f"[bold {EMERALD_BRIGHT}]PostgreSQL Host[/] [{MUTED_TEXT}](or 'b' to cancel)[/]",
+        default=default_host,
+    ).strip()
+    if is_cancel_input(host):
+        console.print(f"[{MUTED_TEXT}]Configuration cancelled — returning to Control Deck.[/]")
+        return False
+
+    port = prompt_int_or_cancel(
+        f"[bold {EMERALD_BRIGHT}]PostgreSQL Port[/]",
+        default=default_port,
+        min_val=1,
+        max_val=65535,
     )
+    if port is None:
+        console.print(f"[{MUTED_TEXT}]Configuration cancelled — returning to Control Deck.[/]")
+        return False
+
+    database = Prompt.ask(
+        f"[bold {EMERALD_BRIGHT}]Database Name[/] [{MUTED_TEXT}](or 'b' to cancel)[/]",
+        default=default_db,
+    ).strip()
+    if is_cancel_input(database):
+        console.print(f"[{MUTED_TEXT}]Configuration cancelled — returning to Control Deck.[/]")
+        return False
+
+    user = Prompt.ask(
+        f"[bold {EMERALD_BRIGHT}]Database User[/] [{MUTED_TEXT}](or 'b' to cancel)[/]",
+        default=default_user,
+    ).strip()
+    if is_cancel_input(user):
+        console.print(f"[{MUTED_TEXT}]Configuration cancelled — returning to Control Deck.[/]")
+        return False
+
+    password = Prompt.ask(
+        f"[bold {EMERALD_BRIGHT}]Database Password[/] [{MUTED_TEXT}](or 'back'/'cancel' to abort)[/]",
+        password=True,
+        default=default_pw,
+    )
+    if password != default_pw and password.strip().lower() in ("b", "back", "cancel"):
+        console.print(f"[{MUTED_TEXT}]Configuration cancelled — returning to Control Deck.[/]")
+        return False
 
     encoded_user = quote_plus(user)
     encoded_pw = quote_plus(password)
@@ -756,11 +883,15 @@ def configure_env_interactive() -> None:
         console.print(f"\n[bold {EMERALD_BRIGHT}][OK] Connection verified: {user}@{host}:{port}/{database}[/]")
     except Exception as exc:
         render_error_card("Connection Test Failed", exc)
-        if not Confirm.ask(
+        save_anyway = prompt_confirm_or_cancel(
             f"[bold {GOLD_PK}]Save these credentials to .env anyway?[/]",
             default=False,
-        ):
-            return
+        )
+        if save_anyway is None:
+            console.print(f"[{MUTED_TEXT}]Configuration cancelled — returning to Control Deck.[/]")
+            return False
+        if not save_anyway:
+            return True
 
     env_text = (
         "# Structura Environment Variables\n"
@@ -779,12 +910,13 @@ def configure_env_interactive() -> None:
         provision_lab_schema_interactive()
 
     render_banner()
+    return True
 
 
 # =====================================================================
 # OPTION [2]: EXPORT MERMAID ERD
 # =====================================================================
-def action_export_mermaid_erd() -> None:
+def action_export_mermaid_erd() -> bool:
     """Compiles the live schema into Mermaid.js erDiagram syntax and writes erd_blueprint.md."""
     try:
         with console.status(
@@ -800,10 +932,10 @@ def action_export_mermaid_erd() -> None:
         ):
             tables = FALLBACK_SCHEMA_TABLES
         else:
-            return
+            return False
     except psycopg2.Error as exc:
         render_error_card("Database Query Error", exc)
-        return
+        return True
 
     if not tables:
         console.print(
@@ -813,7 +945,7 @@ def action_export_mermaid_erd() -> None:
                 box=box.SQUARE,
             )
         )
-        return
+        return True
 
     mermaid_code = compile_mermaid_erd(tables)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -852,6 +984,7 @@ def action_export_mermaid_erd() -> None:
             padding=(1, 2),
         )
     )
+    return True
 
 
 # =====================================================================
@@ -963,98 +1096,199 @@ def generate_synthetic_value(col: Dict[str, Any], row_idx: int) -> Any:
     return clamp_str(fake.sentence(nb_words=5))
 
 
-def action_seed_table_data() -> None:
-    """Interactive prompt to seed a target PostgreSQL table with a Rich Progress bar."""
-    is_sandbox_sim = False
-    try:
-        tables = introspect_public_schema()
-    except psycopg2.OperationalError as exc:
-        render_error_card("PostgreSQL Connection Failed", exc)
-        if Confirm.ask(
-            f"\n[bold {EMERALD_BRIGHT}]Run Seeder in Preview Sandbox mode (simulated Faker + Progress bar) instead?[/]",
-            default=True,
-        ):
-            tables = FALLBACK_SCHEMA_TABLES
-            is_sandbox_sim = True
-        else:
+def compute_table_depths(tables: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Computes topological depth for each table (0 = root or self-referencing FK only)."""
+    table_map = {t["table_name"]: t for t in tables}
+    memo: Dict[str, int] = {}
+
+    def get_depth(tbl_name: str, visiting: set) -> int:
+        if tbl_name in memo:
+            return memo[tbl_name]
+        if tbl_name in visiting:
+            return 0
+        tbl = table_map.get(tbl_name)
+        if not tbl:
+            return 0
+        visiting.add(tbl_name)
+        parent_depths: List[int] = []
+        for col in tbl.get("columns", []):
+            parent = col.get("foreign_table")
+            if col.get("is_fk") and parent and parent != tbl_name and parent in table_map:
+                parent_depths.append(1 + get_depth(parent, visiting))
+        visiting.remove(tbl_name)
+        depth = max(parent_depths) if parent_depths else 0
+        memo[tbl_name] = depth
+        return depth
+
+    for tbl in tables:
+        get_depth(tbl["table_name"], set())
+    return memo
+
+
+def get_empty_not_null_ancestors(
+    target_table: Dict[str, Any],
+    tables: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """
+    Returns empty (row_count == 0) transitive NOT NULL ancestor tables
+    required to seed `target_table`, ordered topologically (parents first).
+    """
+    table_map = {t["table_name"]: t for t in tables}
+    required_names: set = set()
+    ordered: List[Dict[str, Any]] = []
+    visited: set = set()
+
+    def collect(tbl: Dict[str, Any]) -> None:
+        t_name = tbl["table_name"]
+        if t_name in visited:
             return
-    except psycopg2.Error as exc:
-        render_error_card("Database Query Error", exc)
-        return
+        visited.add(t_name)
+        for col in tbl.get("columns", []):
+            parent_name = col.get("foreign_table")
+            if (
+                col.get("is_fk")
+                and parent_name
+                and parent_name != t_name
+                and not col.get("is_nullable")
+                and parent_name in table_map
+            ):
+                parent_tbl = table_map[parent_name]
+                if int(parent_tbl.get("row_count", 0)) == 0:
+                    collect(parent_tbl)
+                    if parent_name not in required_names:
+                        required_names.add(parent_name)
+                        ordered.append(parent_tbl)
 
-    if not tables:
-        console.print(
-            Panel(
-                f"[bold {GOLD_PK}]No tables available in the 'public' schema to seed.[/]",
-                border_style=GOLD_PK,
-                box=box.SQUARE,
-            )
-        )
-        return
+    collect(target_table)
+    return ordered
 
-    # Display table summary list
-    tbl_grid = Table(
-        title=f"[bold {EMERALD_BRIGHT}]Available Target Tables[/]",
-        box=box.SIMPLE_HEAVY,
-        border_style=EMERALD_DEEP,
-        header_style=f"bold {EMERALD_BRIGHT}",
-    )
-    tbl_grid.add_column("#", style=f"bold {EMERALD}", justify="right")
-    tbl_grid.add_column("Table Name", style="bold white")
-    tbl_grid.add_column("Current Rows", style=f"bold {EMERALD_BRIGHT}", justify="right")
-    tbl_grid.add_column("Foreign Keys", style=MUTED_TEXT)
 
-    for idx, t in enumerate(tables, start=1):
-        fks = [
-            f"{c['name']} -> {c['foreign_table']}"
-            for c in t["columns"]
-            if c["is_fk"] and c["foreign_table"]
-        ]
-        fk_str = ", ".join(fks) if fks else "None (Root Table)"
-        tbl_grid.add_row(str(idx), t["table_name"], f"{t['row_count']:,}", fk_str)
-
+def _seed_table_sandbox(
+    tbl_meta: Dict[str, Any],
+    row_count: int,
+    batch_size: int,
+    label_prefix: str = "Seeding",
+) -> Tuple[float, int]:
+    """Simulates Faker batch seeding for a table in Preview Sandbox mode."""
+    table_name = tbl_meta["table_name"]
+    insertable_cols = [
+        c for c in tbl_meta["columns"] if not is_auto_generated_column(c)
+    ]
+    start_t = time.perf_counter()
     console.print()
-    console.print(tbl_grid)
+    with Progress(
+        SpinnerColumn(style=f"bold {EMERALD_BRIGHT}"),
+        TextColumn("[bold white]{task.description}"),
+        BarColumn(
+            bar_width=42,
+            style="#141d18",
+            complete_style=f"bold {EMERALD}",
+            finished_style=f"bold {EMERALD_BRIGHT}",
+        ),
+        MofNCompleteColumn(),
+        TextColumn(f"[bold {EMERALD_BRIGHT}]{{task.percentage:>3.0f}}%"),
+        TimeElapsedColumn(),
+        console=console,
+    ) as progress:
+        task_id = progress.add_task(
+            f"{label_prefix} [bold {EMERALD_BRIGHT}]{table_name}[/] (Preview Sandbox)...",
+            total=row_count,
+        )
+        remaining = row_count
+        current_idx = 1
+        while remaining > 0:
+            chunk_len = min(batch_size, remaining)
+            for _ in range(chunk_len):
+                _ = [
+                    generate_synthetic_value(col, current_idx)
+                    for col in insertable_cols
+                ]
+                current_idx += 1
+            time.sleep(0.02)
+            remaining -= chunk_len
+            progress.update(task_id, advance=chunk_len)
 
-    choice = Prompt.ask(
-        f"\n[bold {EMERALD_BRIGHT}]Enter Target Table Name or Number (1-{len(tables)})[/]",
-        default="1",
-    ).strip()
+    tbl_meta["row_count"] = tbl_meta.get("row_count", 0) + row_count
+    elapsed_ms = round((time.perf_counter() - start_t) * 1000, 2)
+    rows_per_sec = int(row_count / max(0.001, elapsed_ms / 1000.0))
+    return elapsed_ms, rows_per_sec
 
-    selected_table: Optional[Dict[str, Any]] = None
-    if choice.isdigit():
-        idx = int(choice) - 1
-        if 0 <= idx < len(tables):
-            selected_table = tables[idx]
-    else:
-        for t in tables:
-            if t["table_name"].lower() == choice.lower():
-                selected_table = t
-                break
 
-    if not selected_table:
-        console.print(f"[bold {ERROR_RED}][X] Invalid table selection: '{choice}'.[/]")
-        return
+def _seed_table_live(
+    conn: Any,
+    tbl_meta: Dict[str, Any],
+    row_count: int,
+    batch_size: int,
+    label_prefix: str = "Seeding",
+) -> Optional[Tuple[float, int]]:
+    """
+    Inserts `row_count` synthetic rows into `tbl_meta` on an open PostgreSQL connection
+    using psycopg2.sql identifier quoting and extras.execute_batch.
+    Returns (elapsed_ms, rows_per_sec) on success, or None if aborted before insert.
+    """
+    table_name = tbl_meta["table_name"]
+    with conn.cursor() as cur:
+        fk_pools: Dict[str, List[Any]] = {}
+        for col in tbl_meta["columns"]:
+            if col["is_fk"] and col["foreign_table"] and col["foreign_column"]:
+                parent_tbl = col["foreign_table"]
+                parent_col = col["foreign_column"]
+                cur.execute(
+                    sql.SQL(
+                        "SELECT {col} FROM {tbl} WHERE {col} IS NOT NULL ORDER BY RANDOM() LIMIT 500;"
+                    ).format(
+                        col=sql.Identifier(parent_col),
+                        tbl=sql.Identifier(parent_tbl),
+                    )
+                )
+                parent_ids = [r[0] for r in cur.fetchall()]
+                if not parent_ids and parent_tbl != table_name and not col["is_nullable"]:
+                    render_error_card(
+                        "Foreign Key Pre-Flight Violation Prevented",
+                        Exception(
+                            f"Parent table '{parent_tbl}' contains 0 rows. Cannot satisfy NOT NULL foreign key '{table_name}.{col['name']}'."
+                        ),
+                        hint=f"Seed parent table '{parent_tbl}' first before seeding '{table_name}'.",
+                    )
+                    return None
+                fk_pools[col["name"]] = parent_ids
 
-    table_name = selected_table["table_name"]
-
-    row_count = IntPrompt.ask(
-        f"[bold {EMERALD_BRIGHT}]How many synthetic rows to inject into '{table_name}'?[/]",
-        default=1000,
-    )
-    row_count = max(1, min(100000, row_count))
-
-    batch_size = IntPrompt.ask(
-        f"[bold {EMERALD_BRIGHT}]Transaction batch page size (execute_batch)[/]",
-        default=1000,
-    )
-    batch_size = max(50, min(10000, batch_size))
-
-    if is_sandbox_sim:
         insertable_cols = [
-            c for c in selected_table["columns"] if not is_auto_generated_column(c)
+            c for c in tbl_meta["columns"] if not is_auto_generated_column(c)
         ]
+        if not insertable_cols:
+            console.print(
+                f"[bold {GOLD_PK}]Table '{table_name}' only contains auto-generated sequence columns.[/]"
+            )
+            return None
+
+        # Determine safe starting offset for non-serial integer PK/Unique columns
+        pk_start_offset = 1
+        for col in insertable_cols:
+            if (col["is_pk"] or col.get("is_unique")) and col["data_type"].lower() in (
+                "smallint",
+                "int2",
+                "integer",
+                "int4",
+                "bigint",
+                "int8",
+            ):
+                cur.execute(
+                    sql.SQL("SELECT COALESCE(MAX({col}), 0) FROM {tbl};").format(
+                        col=sql.Identifier(col["name"]),
+                        tbl=sql.Identifier(table_name),
+                    )
+                )
+                pk_start_offset = max(pk_start_offset, int(cur.fetchone()[0]) + 1)
+
+        insert_sql = sql.SQL("INSERT INTO {tbl} ({cols}) VALUES ({vals})").format(
+            tbl=sql.Identifier(table_name),
+            cols=sql.SQL(", ").join(sql.Identifier(c["name"]) for c in insertable_cols),
+            vals=sql.SQL(", ").join(sql.Placeholder() for _ in insertable_cols),
+        )
+
         start_t = time.perf_counter()
+
         console.print()
         with Progress(
             SpinnerColumn(style=f"bold {EMERALD_BRIGHT}"),
@@ -1071,26 +1305,247 @@ def action_seed_table_data() -> None:
             console=console,
         ) as progress:
             task_id = progress.add_task(
-                f"Seeding [bold {EMERALD_BRIGHT}]{table_name}[/] (Preview Sandbox)...",
+                f"{label_prefix} [bold {EMERALD_BRIGHT}]{table_name}[/]...",
                 total=row_count,
             )
+
             remaining = row_count
-            current_idx = 1
+            current_idx = pk_start_offset
+
             while remaining > 0:
                 chunk_len = min(batch_size, remaining)
+                batch_records: List[Tuple[Any, ...]] = []
+
                 for _ in range(chunk_len):
-                    _ = [
-                        generate_synthetic_value(col, current_idx)
-                        for col in insertable_cols
-                    ]
+                    row_vals: List[Any] = []
+                    for col in insertable_cols:
+                        c_name = col["name"]
+                        if col["is_fk"]:
+                            pool_ids = fk_pools.get(c_name, [])
+                            if pool_ids:
+                                if col["is_nullable"] and random.random() < 0.12:
+                                    row_vals.append(None)
+                                else:
+                                    row_vals.append(random.choice(pool_ids))
+                            else:
+                                row_vals.append(None)
+                        else:
+                            row_vals.append(generate_synthetic_value(col, current_idx))
+                    batch_records.append(tuple(row_vals))
                     current_idx += 1
-                time.sleep(0.02)
+
+                extras.execute_batch(cur, insert_sql, batch_records, page_size=chunk_len)
                 remaining -= chunk_len
                 progress.update(task_id, advance=chunk_len)
 
-        selected_table["row_count"] = selected_table.get("row_count", 0) + row_count
-        elapsed_ms = round((time.perf_counter() - start_t) * 1000, 2)
-        rows_per_sec = int(row_count / max(0.001, elapsed_ms / 1000.0))
+    tbl_meta["row_count"] = tbl_meta.get("row_count", 0) + row_count
+    elapsed_ms = round((time.perf_counter() - start_t) * 1000, 2)
+    rows_per_sec = int(row_count / max(0.001, elapsed_ms / 1000.0))
+    return elapsed_ms, rows_per_sec
+
+
+def action_seed_table_data() -> bool:
+    """Interactive prompt to seed a target PostgreSQL table with a Rich Progress bar."""
+    is_sandbox_sim = False
+    try:
+        tables = introspect_public_schema()
+    except psycopg2.OperationalError as exc:
+        render_error_card("PostgreSQL Connection Failed", exc)
+        if Confirm.ask(
+            f"\n[bold {EMERALD_BRIGHT}]Run Seeder in Preview Sandbox mode (simulated Faker + Progress bar) instead?[/]",
+            default=True,
+        ):
+            tables = FALLBACK_SCHEMA_TABLES
+            is_sandbox_sim = True
+        else:
+            return False
+    except psycopg2.Error as exc:
+        render_error_card("Database Query Error", exc)
+        return True
+
+    if not tables:
+        console.print(
+            Panel(
+                f"[bold {GOLD_PK}]No tables available in the 'public' schema to seed.[/]",
+                border_style=GOLD_PK,
+                box=box.SQUARE,
+            )
+        )
+        return True
+
+    depths = compute_table_depths(tables)
+    ordered_tables = sorted(tables, key=lambda t: (depths.get(t["table_name"], 0), t["table_name"]))
+    table_map = {t["table_name"]: t for t in ordered_tables}
+
+    # Display table summary list ordered topologically with parent status annotations
+    tbl_grid = Table(
+        title=f"[bold {EMERALD_BRIGHT}]Available Target Tables (Topological Order)[/]",
+        box=box.SIMPLE_HEAVY,
+        border_style=EMERALD_DEEP,
+        header_style=f"bold {EMERALD_BRIGHT}",
+    )
+    tbl_grid.add_column("#", style=f"bold {EMERALD}", justify="right")
+    tbl_grid.add_column("Table Name", style="bold white")
+    tbl_grid.add_column("Depth / Parent Status")
+    tbl_grid.add_column("Current Rows", style=f"bold {EMERALD_BRIGHT}", justify="right")
+    tbl_grid.add_column("Foreign Keys", style=MUTED_TEXT)
+
+    for idx, t in enumerate(ordered_tables, start=1):
+        t_name = t["table_name"]
+        depth = depths.get(t_name, 0)
+        empty_req_parents = sorted(
+            {
+                c["foreign_table"]
+                for c in t["columns"]
+                if c.get("is_fk")
+                and c.get("foreign_table")
+                and c["foreign_table"] != t_name
+                and not c.get("is_nullable")
+                and int(table_map.get(c["foreign_table"], {}).get("row_count", 0)) == 0
+            }
+        )
+
+        if empty_req_parents:
+            status_cell = f"[bold {GOLD_PK}]L{depth} · Empty parent: {', '.join(empty_req_parents)}[/]"
+        elif depth == 0:
+            status_cell = f"[{MUTED_TEXT}]L0 · Root[/]"
+        else:
+            status_cell = f"[{EMERALD_BRIGHT}]L{depth} · Parents ready[/]"
+
+        fk_parts = []
+        for c in t["columns"]:
+            if c.get("is_fk") and c.get("foreign_table"):
+                parent_tbl = c["foreign_table"]
+                parent_rows = int(table_map.get(parent_tbl, {}).get("row_count", 0))
+                if parent_tbl != t_name and not c.get("is_nullable") and parent_rows == 0:
+                    fk_parts.append(f"[{GOLD_PK}]{c['name']} -> {parent_tbl} (0 rows)[/]")
+                else:
+                    fk_parts.append(f"{c['name']} -> {parent_tbl}")
+        fk_str = ", ".join(fk_parts) if fk_parts else f"[{DIM_TEXT}]None (Root Table)[/]"
+
+        tbl_grid.add_row(str(idx), t_name, status_cell, f"{t['row_count']:,}", fk_str)
+
+    console.print()
+    console.print(tbl_grid)
+
+    choice = Prompt.ask(
+        f"\n[bold {EMERALD_BRIGHT}]Enter Target Table Name or Number (1-{len(ordered_tables)})[/] "
+        f"[{MUTED_TEXT}](or 'b' to cancel)[/]",
+        default="1",
+    ).strip()
+
+    if is_cancel_input(choice) and not any(
+        t["table_name"].lower() == choice.lower() for t in ordered_tables
+    ):
+        console.print(f"[{MUTED_TEXT}]Seeding cancelled — returning to Control Deck.[/]")
+        return False
+
+    selected_table: Optional[Dict[str, Any]] = None
+    if choice.isdigit():
+        idx = int(choice) - 1
+        if 0 <= idx < len(ordered_tables):
+            selected_table = ordered_tables[idx]
+    else:
+        for t in ordered_tables:
+            if t["table_name"].lower() == choice.lower():
+                selected_table = t
+                break
+
+    if not selected_table:
+        console.print(f"[bold {ERROR_RED}][X] Invalid table selection: '{choice}'.[/]")
+        return True
+
+    table_name = selected_table["table_name"]
+
+    # Smart FK Pre-Flight: Offer to auto-seed empty NOT NULL ancestor tables (50 rows each)
+    empty_ancestors = get_empty_not_null_ancestors(selected_table, ordered_tables)
+    if empty_ancestors:
+        anc_chain = " -> ".join(a["table_name"] for a in empty_ancestors)
+        console.print()
+        console.print(
+            Panel(
+                f"[bold {GOLD_PK}]'{table_name}' has empty NOT NULL ancestor table(s):[/]\n"
+                f"[bold white]{anc_chain}[/]\n\n"
+                f"[{MUTED_TEXT}]Auto-seeding 50 synthetic rows per empty ancestor in topological order "
+                f"satisfies foreign key constraints automatically.[/]",
+                title=f"[bold {GOLD_PK}][ AUTO-PARENT DEPENDENCY CHECK ][/]",
+                border_style=GOLD_PK,
+                box=box.SQUARE,
+                padding=(1, 2),
+            )
+        )
+        auto_confirm = prompt_confirm_or_cancel(
+            f"[bold {EMERALD_BRIGHT}]Auto-seed 50 rows into each empty ancestor ({anc_chain}) first?[/]",
+            default=True,
+        )
+        if auto_confirm is None:
+            console.print(f"[{MUTED_TEXT}]Seeding cancelled — returning to Control Deck.[/]")
+            return False
+        if not auto_confirm:
+            missing_list = ", ".join(a["table_name"] for a in empty_ancestors)
+            render_error_card(
+                "Foreign Key Pre-Flight Violation Prevented",
+                Exception(
+                    f"Cannot seed '{table_name}' while required parent table(s) ({missing_list}) have 0 rows."
+                ),
+                hint=f"Seed {missing_list} first (or allow Auto-Parent seeding) before seeding '{table_name}'.",
+            )
+            return True
+
+        if is_sandbox_sim:
+            for anc_tbl in empty_ancestors:
+                _seed_table_sandbox(anc_tbl, 50, 50, label_prefix="Auto-seeding parent")
+                console.print(
+                    f"[bold {EMERALD_BRIGHT}][OK] Auto-seeded +50 rows into '{anc_tbl['table_name']}' (Preview Sandbox)[/]"
+                )
+        else:
+            try:
+                anc_conn = psycopg2.connect(get_database_url(), connect_timeout=3)
+            except psycopg2.OperationalError as exc:
+                render_error_card("PostgreSQL Connection Failed", exc)
+                return True
+            try:
+                for anc_tbl in empty_ancestors:
+                    res = _seed_table_live(
+                        anc_conn, anc_tbl, 50, 50, label_prefix="Auto-seeding parent"
+                    )
+                    if res is None:
+                        anc_conn.rollback()
+                        return True
+                anc_conn.commit()
+                for anc_tbl in empty_ancestors:
+                    console.print(
+                        f"[bold {EMERALD_BRIGHT}][OK] Auto-seeded +50 rows into '{anc_tbl['table_name']}'[/]"
+                    )
+            except psycopg2.Error as exc:
+                anc_conn.rollback()
+                render_error_card("Auto-Parent Seeding Failed (Rolled Back)", exc)
+                return True
+            finally:
+                anc_conn.close()
+
+    row_count = prompt_int_or_cancel(
+        f"[bold {EMERALD_BRIGHT}]How many synthetic rows to inject into '{table_name}'?[/]",
+        default=1000,
+        min_val=1,
+        max_val=100000,
+    )
+    if row_count is None:
+        console.print(f"[{MUTED_TEXT}]Seeding cancelled — returning to Control Deck.[/]")
+        return False
+
+    batch_size = prompt_int_or_cancel(
+        f"[bold {EMERALD_BRIGHT}]Transaction batch page size (execute_batch)[/]",
+        default=1000,
+        min_val=50,
+        max_val=10000,
+    )
+    if batch_size is None:
+        console.print(f"[{MUTED_TEXT}]Seeding cancelled — returning to Control Deck.[/]")
+        return False
+
+    if is_sandbox_sim:
+        elapsed_ms, rows_per_sec = _seed_table_sandbox(selected_table, row_count, batch_size)
 
         summary = Text()
         summary.append("[OK] Preview Sandbox Batch Simulation Complete\n\n", style=f"bold {EMERALD_BRIGHT}")
@@ -1113,156 +1568,50 @@ def action_seed_table_data() -> None:
                 padding=(1, 2),
             )
         )
-        return
+        return True
 
-    # Connect & resolve parent foreign keys in memory (with safe sql.Identifier quoting)
+    # Connect & seed target table in live PostgreSQL (with safe sql.Identifier quoting)
     try:
         conn = psycopg2.connect(get_database_url(), connect_timeout=3)
     except psycopg2.OperationalError as exc:
         render_error_card("PostgreSQL Connection Failed", exc)
-        return
+        return True
 
     try:
-        with conn.cursor() as cur:
-            fk_pools: Dict[str, List[Any]] = {}
-            for col in selected_table["columns"]:
-                if col["is_fk"] and col["foreign_table"] and col["foreign_column"]:
-                    parent_tbl = col["foreign_table"]
-                    parent_col = col["foreign_column"]
-                    cur.execute(
-                        sql.SQL(
-                            "SELECT {col} FROM {tbl} WHERE {col} IS NOT NULL ORDER BY RANDOM() LIMIT 500;"
-                        ).format(
-                            col=sql.Identifier(parent_col),
-                            tbl=sql.Identifier(parent_tbl),
-                        )
-                    )
-                    parent_ids = [r[0] for r in cur.fetchall()]
-                    if not parent_ids and parent_tbl != table_name and not col["is_nullable"]:
-                        render_error_card(
-                            "Foreign Key Pre-Flight Violation Prevented",
-                            Exception(
-                                f"Parent table '{parent_tbl}' contains 0 rows. Cannot satisfy NOT NULL foreign key '{table_name}.{col['name']}'."
-                            ),
-                            hint=f"Seed parent table '{parent_tbl}' first before seeding '{table_name}'.",
-                        )
-                        return
-                    fk_pools[col["name"]] = parent_ids
+        res = _seed_table_live(conn, selected_table, row_count, batch_size)
+        if res is None:
+            conn.rollback()
+            return True
+        conn.commit()
+        elapsed_ms, rows_per_sec = res
 
-            insertable_cols = [
-                c for c in selected_table["columns"] if not is_auto_generated_column(c)
-            ]
-            if not insertable_cols:
-                console.print(
-                    f"[bold {GOLD_PK}]Table '{table_name}' only contains auto-generated sequence columns.[/]"
-                )
-                return
+        summary = Text()
+        summary.append("[OK] Atomic Batch Transaction Committed\n\n", style=f"bold {EMERALD_BRIGHT}")
+        summary.append("Target Table    : ", style=f"bold {MUTED_TEXT}")
+        summary.append(f"{table_name}\n", style="bold white")
+        summary.append("Rows Inserted   : ", style=f"bold {MUTED_TEXT}")
+        summary.append(f"+{row_count:,} rows\n", style=f"bold {EMERALD_BRIGHT}")
+        summary.append("Execution Time  : ", style=f"bold {MUTED_TEXT}")
+        summary.append(f"{elapsed_ms:,.2f} ms\n", style="bold white")
+        summary.append("Throughput      : ", style=f"bold {MUTED_TEXT}")
+        summary.append(f"~{rows_per_sec:,} rows/sec (page_size={batch_size})", style=f"bold {EMERALD}")
 
-            # Determine safe starting offset for non-serial integer PK/Unique columns
-            pk_start_offset = 1
-            for col in insertable_cols:
-                if (col["is_pk"] or col.get("is_unique")) and col["data_type"].lower() in (
-                    "smallint",
-                    "int2",
-                    "integer",
-                    "int4",
-                    "bigint",
-                    "int8",
-                ):
-                    cur.execute(
-                        sql.SQL("SELECT COALESCE(MAX({col}), 0) FROM {tbl};").format(
-                            col=sql.Identifier(col["name"]),
-                            tbl=sql.Identifier(table_name),
-                        )
-                    )
-                    pk_start_offset = max(pk_start_offset, int(cur.fetchone()[0]) + 1)
-
-            insert_sql = sql.SQL("INSERT INTO {tbl} ({cols}) VALUES ({vals})").format(
-                tbl=sql.Identifier(table_name),
-                cols=sql.SQL(", ").join(sql.Identifier(c["name"]) for c in insertable_cols),
-                vals=sql.SQL(", ").join(sql.Placeholder() for _ in insertable_cols),
+        console.print()
+        console.print(
+            Panel(
+                summary,
+                title=f"[bold {EMERALD_BRIGHT}][ HIGH-VELOCITY SEEDER TELEMETRY ][/]",
+                border_style=EMERALD,
+                box=box.SQUARE,
+                padding=(1, 2),
             )
-
-            start_t = time.perf_counter()
-
-            console.print()
-            with Progress(
-                SpinnerColumn(style=f"bold {EMERALD_BRIGHT}"),
-                TextColumn("[bold white]{task.description}"),
-                BarColumn(
-                    bar_width=42,
-                    style="#141d18",
-                    complete_style=f"bold {EMERALD}",
-                    finished_style=f"bold {EMERALD_BRIGHT}",
-                ),
-                MofNCompleteColumn(),
-                TextColumn(f"[bold {EMERALD_BRIGHT}]{{task.percentage:>3.0f}}%"),
-                TimeElapsedColumn(),
-                console=console,
-            ) as progress:
-                task_id = progress.add_task(
-                    f"Seeding [bold {EMERALD_BRIGHT}]{table_name}[/]...",
-                    total=row_count,
-                )
-
-                remaining = row_count
-                current_idx = pk_start_offset
-
-                while remaining > 0:
-                    chunk_len = min(batch_size, remaining)
-                    batch_records: List[Tuple[Any, ...]] = []
-
-                    for _ in range(chunk_len):
-                        row_vals: List[Any] = []
-                        for col in insertable_cols:
-                            c_name = col["name"]
-                            if col["is_fk"]:
-                                pool_ids = fk_pools.get(c_name, [])
-                                if pool_ids:
-                                    if col["is_nullable"] and random.random() < 0.12:
-                                        row_vals.append(None)
-                                    else:
-                                        row_vals.append(random.choice(pool_ids))
-                                else:
-                                    row_vals.append(None)
-                            else:
-                                row_vals.append(generate_synthetic_value(col, current_idx))
-                        batch_records.append(tuple(row_vals))
-                        current_idx += 1
-
-                    extras.execute_batch(cur, insert_sql, batch_records, page_size=chunk_len)
-                    remaining -= chunk_len
-                    progress.update(task_id, advance=chunk_len)
-
-            conn.commit()
-            elapsed_ms = round((time.perf_counter() - start_t) * 1000, 2)
-            rows_per_sec = int(row_count / max(0.001, elapsed_ms / 1000.0))
-
-            summary = Text()
-            summary.append("[OK] Atomic Batch Transaction Committed\n\n", style=f"bold {EMERALD_BRIGHT}")
-            summary.append("Target Table    : ", style=f"bold {MUTED_TEXT}")
-            summary.append(f"{table_name}\n", style="bold white")
-            summary.append("Rows Inserted   : ", style=f"bold {MUTED_TEXT}")
-            summary.append(f"+{row_count:,} rows\n", style=f"bold {EMERALD_BRIGHT}")
-            summary.append("Execution Time  : ", style=f"bold {MUTED_TEXT}")
-            summary.append(f"{elapsed_ms:,.2f} ms\n", style="bold white")
-            summary.append("Throughput      : ", style=f"bold {MUTED_TEXT}")
-            summary.append(f"~{rows_per_sec:,} rows/sec (page_size={batch_size})", style=f"bold {EMERALD}")
-
-            console.print()
-            console.print(
-                Panel(
-                    summary,
-                    title=f"[bold {EMERALD_BRIGHT}][ HIGH-VELOCITY SEEDER TELEMETRY ][/]",
-                    border_style=EMERALD,
-                    box=box.SQUARE,
-                    padding=(1, 2),
-                )
-            )
+        )
+        return True
 
     except psycopg2.Error as exc:
         conn.rollback()
         render_error_card("Transaction Rolled Back (Constraint / SQL Error)", exc)
+        return True
     finally:
         conn.close()
 
@@ -1332,7 +1681,27 @@ def launch_web_server(open_browser: bool = True, reload_mode: bool = True) -> No
 # INTERACTIVE TUI MENU LOOP
 # =====================================================================
 def render_main_menu() -> str:
-    """Renders the Obsidian & Emerald interactive menu options (1–5)."""
+    """Renders the Obsidian & Emerald interactive menu options (1–6, q to quit)."""
+    dsn_summary, is_online, table_count = get_live_env_status()
+    env_strip = Text()
+    if is_online:
+        tbl_word = "table" if table_count == 1 else "tables"
+        env_strip.append(" [LIVE] ", style=f"bold #022016 on {EMERALD_BRIGHT}")
+        env_strip.append(f" {dsn_summary} ", style="bold white")
+        env_strip.append("|", style=DIM_TEXT)
+        env_strip.append(
+            f" Connected with {table_count} public {tbl_word}",
+            style=f"bold {EMERALD_BRIGHT}",
+        )
+    else:
+        env_strip.append(" [SANDBOX] ", style=f"bold #1F1200 on {GOLD_PK}")
+        env_strip.append(f" {dsn_summary} ", style="bold white")
+        env_strip.append("|", style=DIM_TEXT)
+        env_strip.append(
+            " Unreachable -> Preview Sandbox available",
+            style=f"{GOLD_PK}",
+        )
+
     menu_table = Table.grid(padding=(0, 2))
     menu_table.add_column(style=f"bold {EMERALD_BRIGHT}", justify="right")
     menu_table.add_column(style="bold white")
@@ -1361,7 +1730,7 @@ def render_main_menu() -> str:
     menu_table.add_row(
         "[5]",
         "Exit",
-        "Close Structura TUI",
+        "Close Structura TUI (or type 'q')",
     )
     menu_table.add_row(
         "[6]",
@@ -1370,6 +1739,7 @@ def render_main_menu() -> str:
     )
 
     console.print()
+    console.print(env_strip, no_wrap=True, overflow="ellipsis")
     console.print(
         Panel(
             menu_table,
@@ -1381,11 +1751,18 @@ def render_main_menu() -> str:
         )
     )
 
-    return Prompt.ask(
-        f"[bold {EMERALD_BRIGHT}]Select an operation[/]",
-        choices=["1", "2", "3", "4", "5", "6"],
-        default="1",
-    )
+    while True:
+        raw = Prompt.ask(
+            f"[bold {EMERALD_BRIGHT}]Select an operation[/] [{MUTED_TEXT}](1-6, or q to quit)[/]",
+            default="1",
+        ).strip().lower()
+        if raw in ("q", "quit", "exit"):
+            return "5"
+        if raw in ("1", "2", "3", "4", "5", "6"):
+            return raw
+        console.print(
+            f"[bold {ERROR_RED}][X] Invalid choice '{raw}'. Enter 1-6 or q/quit/exit.[/]"
+        )
 
 
 def run_tui() -> None:
@@ -1396,11 +1773,14 @@ def run_tui() -> None:
         try:
             choice = render_main_menu()
             if choice == "1":
-                action_view_schema_tree()
+                if action_view_schema_tree() is not False:
+                    pause_before_menu()
             elif choice == "2":
-                action_export_mermaid_erd()
+                if action_export_mermaid_erd() is not False:
+                    pause_before_menu()
             elif choice == "3":
-                action_seed_table_data()
+                if action_seed_table_data() is not False:
+                    pause_before_menu()
             elif choice == "4":
                 launch_web_server(open_browser=True, reload_mode=True)
             elif choice == "5":
@@ -1409,7 +1789,8 @@ def run_tui() -> None:
                 )
                 break
             elif choice == "6":
-                configure_env_interactive()
+                if configure_env_interactive() is not False:
+                    pause_before_menu()
         except KeyboardInterrupt:
             console.print(
                 f"\n\n[bold {EMERALD_BRIGHT}][STRUCTURA FORGE] Interrupted — exiting Structura Forge cleanly.[/]\n"

@@ -123,33 +123,33 @@
     /* Studio Cards & Inputs */
     .studio-card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
     }
 
     .studio-modal {
       background: #0a0e0c;
-      border: 1px solid rgba(16, 185, 129, 0.22);
-      border-radius: 18px;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 35px -10px rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 16px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 35px -10px rgba(16, 185, 129, 0.1);
     }
 
     .studio-input {
       background: var(--elevated);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       color: #F4F4F5;
-      border-radius: 12px;
+      border-radius: 10px;
       transition: all 0.15s ease;
     }
     .studio-input:hover {
-      border-color: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.16);
       background: #141c18;
     }
     .studio-input:focus,
     button:focus-visible {
       border-color: var(--emerald);
       outline: none;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22);
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.22);
     }
 
     /* Primary Emerald Button */
@@ -157,13 +157,13 @@
       background: linear-gradient(180deg, #10B981 0%, #059669 100%);
       color: #021a11;
       font-weight: 700;
-      border: 1px solid rgba(52, 211, 153, 0.4);
+      border: 1px solid rgba(52, 211, 153, 0.35);
       transition: all 0.15s var(--ease-out);
     }
     .btn-emerald:hover:not(:disabled) {
       background: linear-gradient(180deg, #34D399 0%, #10B981 100%);
       transform: translateY(-1px);
-      box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.45);
+      box-shadow: 0 8px 22px -4px rgba(16, 185, 129, 0.4);
     }
     .btn-emerald:active:not(:disabled) {
       transform: translateY(0);
@@ -171,15 +171,27 @@
 
     /* Secondary Surface Button */
     .btn-surface {
-      background: #111714;
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      color: #E4E4E7;
+      background: #101613;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      color: #D4D4D8;
       transition: all 0.15s ease;
     }
     .btn-surface:hover:not(:disabled) {
-      background: #18211c;
-      border-color: rgba(16, 185, 129, 0.35);
+      background: #161f1b;
+      border-color: rgba(16, 185, 129, 0.28);
       color: #FFFFFF;
+    }
+
+    /* Quiet Icon / Ghost Button */
+    .btn-quiet {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #A1A1AA;
+      transition: all 0.15s ease;
+    }
+    .btn-quiet:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.06);
+      color: #F4F4F5;
     }
 
     /* Custom App-Themed Range Slider */
@@ -188,24 +200,24 @@
       appearance: none;
       background: transparent;
       cursor: pointer;
-      height: 28px;
+      height: 22px;
     }
     input[type="range"]::-webkit-slider-runnable-track {
-      height: 8px;
+      height: 5px;
       border-radius: 999px;
       background: #141d18;
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 22px;
-      height: 22px;
+      width: 16px;
+      height: 16px;
       border-radius: 999px;
       background: #34D399;
-      margin-top: -8px;
-      border: 3px solid #041f15;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.65);
+      margin-top: -6px;
+      border: 2px solid #041f15;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.45);
       transition: transform 0.15s ease, background-color 0.15s ease;
     }
     input[type="range"]::-webkit-slider-thumb:hover {
@@ -213,18 +225,18 @@
       background: #6EE7B7;
     }
     input[type="range"]::-moz-range-track {
-      height: 8px;
+      height: 5px;
       border-radius: 999px;
       background: #141d18;
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
     input[type="range"]::-moz-range-thumb {
-      width: 22px;
-      height: 22px;
+      width: 16px;
+      height: 16px;
       border-radius: 999px;
       background: #34D399;
-      border: 3px solid #041f15;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.65);
+      border: 2px solid #041f15;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.45);
     }
 
     /* Custom Scrollbars */
@@ -249,23 +261,24 @@
     .mermaid .node polygon,
     .mermaid .er.entityBox {
       fill: #0b110e !important;
-      stroke: rgba(16, 185, 129, 0.55) !important;
-      stroke-width: 1.75px !important;
-      rx: 8px !important;
+      stroke: rgba(16, 185, 129, 0.5) !important;
+      stroke-width: 1.5px !important;
+      rx: 0 !important;
+      ry: 0 !important;
       cursor: pointer;
     }
     .mermaid .er.attributeBoxOdd {
       fill: #0f1713 !important;
-      stroke: rgba(255, 255, 255, 0.06) !important;
+      stroke: rgba(255, 255, 255, 0.05) !important;
     }
     .mermaid .er.attributeBoxEven {
       fill: #090e0b !important;
-      stroke: rgba(255, 255, 255, 0.06) !important;
+      stroke: rgba(255, 255, 255, 0.05) !important;
     }
     .mermaid .relationshipLine,
     .mermaid .er.relationshipLine {
       stroke: rgba(52, 211, 153, 0.65) !important;
-      stroke-width: 2px !important;
+      stroke-width: 1.75px !important;
     }
     .mermaid .er.relationshipLabelBox {
       fill: #050706 !important;
@@ -277,20 +290,47 @@
     }
     .mermaid text {
       font-family: 'JetBrains Mono', monospace !important;
-      font-size: 13.5px !important;
       fill: #F4F4F5 !important;
     }
 
     /* Active Highlight in ERD */
+    .erd-active-node {
+      opacity: 1;
+      filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.45));
+      transition: opacity 0.18s ease, filter 0.18s ease;
+    }
+    .erd-parent-node {
+      opacity: 1;
+      filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));
+      transition: opacity 0.18s ease, filter 0.18s ease;
+    }
+    .erd-dimmed-node {
+      opacity: 0.34;
+      transition: opacity 0.18s ease;
+    }
+    .erd-dimmed-node:hover {
+      opacity: 0.78;
+    }
     .erd-active-node .er.entityBox {
       stroke: #34D399 !important;
-      stroke-width: 3px !important;
-      filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.55));
+      stroke-width: 2px !important;
     }
     .erd-parent-node .er.entityBox {
       stroke: #FBBF24 !important;
-      stroke-width: 2.2px !important;
-      stroke-dasharray: 6 3;
+      stroke-width: 2px !important;
+      stroke-dasharray: 5 3;
+    }
+
+    /* Live Seeding Indeterminate Animation */
+    @keyframes progressIndeterminate {
+      0% { transform: translateX(-110%); }
+      100% { transform: translateX(240%); }
+    }
+    .seed-progress-live {
+      width: 45% !important;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.2) 0%, #34D399 50%, rgba(16, 185, 129, 0.2) 100%) !important;
+      animation: progressIndeterminate 1.15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      transition: none !important;
     }
 
     /* Pan & Zoom Canvas */
@@ -323,68 +363,66 @@
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
 
   <!-- ======================================================== -->
-  <!-- 1. SPACIOUS, HIGH-READABILITY TOP HEADER                 -->
+  <!-- 1. MINIMAL TOP HEADER                                    -->
   <!-- ======================================================== -->
-  <header class="h-[72px] border-b border-white/[0.08] bg-[#050706] shrink-0 flex items-center justify-between px-6 z-30">
+  <header class="h-16 border-b border-white/[0.06] bg-[#050706] shrink-0 flex items-center justify-between px-5 z-30">
     <!-- Brand Identity -->
-    <div class="flex items-center space-x-3.5 cursor-pointer group" onclick="fitErdToScreen()" title="Click to fit diagram to screen">
-      <div class="w-12 h-12 rounded-xl bg-black border border-emerald-500/35 flex items-center justify-center p-1 overflow-hidden shadow-lg shadow-emerald-950/50 group-hover:border-emerald-400 transition">
+    <div class="flex items-center space-x-3 cursor-pointer group" onclick="fitErdToScreen()" title="Fit diagram to screen (F)">
+      <div class="w-9 h-9 rounded-lg bg-black border border-white/[0.1] flex items-center justify-center p-1 overflow-hidden group-hover:border-emerald-500/40 transition">
         <img id="custom-logo" src="assets/structura-icon.png?v=3" onerror="this.src='assets/Structura%20Logo.jpg'; this.onerror=function(){this.style.display='none'; document.getElementById('default-logo-svg').style.display='block';};" class="w-full h-full object-contain" alt="Structura Forge Logo" />
-        <svg id="default-logo-svg" class="w-6 h-6 text-emerald-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg id="default-logo-svg" class="w-5 h-5 text-emerald-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
           <polyline points="2 17 12 22 22 17"></polyline>
           <polyline points="2 12 12 17 22 12"></polyline>
         </svg>
       </div>
-      <div>
-        <div class="flex items-center space-x-2.5">
-          <span class="text-xl font-bold tracking-[0.1em] text-white uppercase">Structu<span class="text-emerald-400">ra</span></span>
-          <span class="hidden sm:inline-block text-xs font-mono uppercase px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">Forge</span>
-        </div>
+      <div class="flex items-baseline space-x-2">
+        <span class="text-base font-bold tracking-[0.12em] text-white uppercase">Structu<span class="text-emerald-400">ra</span></span>
+        <span class="hidden sm:inline-block text-[11px] font-medium text-zinc-500">Forge</span>
       </div>
     </div>
 
-    <!-- Right Controls: Connection Status Pill + Sync + Tools Menu -->
-    <div class="flex items-center space-x-3">
+    <!-- Right Controls: Connection Pill + Quiet Refresh + Menu -->
+    <div class="flex items-center space-x-2">
       <!-- Connection Status Pill (Opens Connection & Mode Popover) -->
       <div class="relative" id="conn-menu-wrapper">
-        <button onclick="toggleConnMenu(event)" id="connection-pill" class="flex items-center space-x-2.5 px-4 py-2 rounded-xl text-sm font-mono btn-surface">
-          <span id="connection-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400"></span>
+        <button onclick="toggleConnMenu(event)" id="connection-pill" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-mono btn-surface">
+          <span id="connection-dot" class="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400"></span>
           <span id="connection-text" class="text-zinc-200 font-medium">localhost:5432</span>
-          <span id="connection-mode-tag" class="text-xs px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-semibold">Live</span>
-          <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          <span id="connection-mode-tag" class="text-[11px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-medium">Live</span>
+          <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
 
         <!-- Connection Popover -->
-        <div id="conn-dropdown" class="hidden absolute right-0 mt-2.5 w-80 studio-modal p-3 z-50 text-sm anim-pop">
-          <div class="px-3 py-2 border-b border-white/[0.07] flex items-center justify-between">
-            <span class="font-semibold text-zinc-200">Database Environment</span>
-            <button onclick="openOnboardingModal()" class="text-xs font-mono text-emerald-400 hover:underline">Setup Guide</button>
+        <div id="conn-dropdown" class="hidden absolute right-0 mt-2 w-72 studio-modal p-2.5 z-50 text-sm anim-pop">
+          <div class="px-2.5 py-2 border-b border-white/[0.06] flex items-center justify-between">
+            <span class="text-xs font-semibold text-zinc-300">Database Environment</span>
+            <button onclick="openOnboardingModal()" class="text-xs text-emerald-400 hover:underline">Setup Guide</button>
           </div>
-          <div class="p-1.5 space-y-1">
-            <button onclick="selectModeFromMenu('live')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <div class="flex items-center space-x-3">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <div class="py-1.5 space-y-1">
+            <button onclick="selectModeFromMenu('live')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <div class="flex items-center space-x-2.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 <div>
-                  <div class="font-medium text-zinc-100">Live PostgreSQL</div>
-                  <div class="text-xs text-zinc-400 font-mono">Introspect &amp; seed real DB</div>
+                  <div class="text-sm font-medium text-zinc-100">Live PostgreSQL</div>
+                  <div class="text-[11px] text-zinc-500">Introspect &amp; seed real DB</div>
                 </div>
               </div>
-              <span class="text-xs font-mono text-emerald-400">Active</span>
+              <span class="text-[11px] font-mono text-emerald-400">Active</span>
             </button>
-            <button onclick="selectModeFromMenu('demo')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <div class="flex items-center space-x-3">
-                <span class="w-2.5 h-2.5 rounded-full bg-teal-300"></span>
+            <button onclick="selectModeFromMenu('demo')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <div class="flex items-center space-x-2.5">
+                <span class="w-2 h-2 rounded-full bg-teal-300"></span>
                 <div>
-                  <div class="font-medium text-zinc-100">Preview Sandbox</div>
-                  <div class="text-xs text-zinc-400 font-mono">Built-in 6-table lab schema</div>
+                  <div class="text-sm font-medium text-zinc-100">Preview Sandbox</div>
+                  <div class="text-[11px] text-zinc-500">Built-in 6-table lab schema</div>
                 </div>
               </div>
-              <span class="text-xs font-mono text-zinc-400">Demo</span>
+              <span class="text-[11px] font-mono text-zinc-500">Demo</span>
             </button>
           </div>
-          <div class="border-t border-white/[0.07] pt-2 mt-1 px-1.5 flex flex-col gap-1">
-            <button onclick="openSettingsModal()" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-medium text-sm transition">
+          <div class="border-t border-white/[0.06] pt-2 mt-1">
+            <button onclick="openSettingsModal()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-300 font-medium text-xs transition">
               <span>Configure Connection (.env)</span>
               <span>→</span>
             </button>
@@ -392,61 +430,64 @@
         </div>
       </div>
 
-      <!-- Refresh / Sync Schema Button -->
-      <button onclick="fetchSchema()" title="Refresh Schema (Shortcut: R)" class="flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium btn-surface">
-        <svg id="refresh-icon" class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Quiet Icon-Only Refresh Button -->
+      <button onclick="fetchSchema()" title="Refresh Schema (R)" aria-label="Refresh Schema" class="w-8 h-8 rounded-lg flex items-center justify-center btn-quiet">
+        <svg id="refresh-icon" class="w-4 h-4 text-zinc-400 hover:text-emerald-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
         </svg>
-        <span class="hidden sm:inline">Refresh</span>
       </button>
 
-      <!-- Tools & More Button (Keeps unusual tools hidden until clicked) -->
+      <!-- Tools & More Button -->
       <div class="relative" id="main-menu-wrapper">
-        <button onclick="toggleMainMenu(event)" title="Tools &amp; Options" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-sm font-medium btn-surface">
-          <svg class="w-5 h-5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button onclick="toggleMainMenu(event)" title="Workspace Menu" aria-label="Workspace Menu" class="w-8 h-8 rounded-lg flex items-center justify-center btn-surface">
+          <svg class="w-4 h-4 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         </button>
 
         <!-- Tools Popover Menu -->
-        <div id="main-menu-dropdown" class="hidden absolute right-0 mt-2.5 w-72 studio-modal p-2 z-50 text-sm anim-pop">
-          <div class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-zinc-400 border-b border-white/[0.07]">
-            Workspace Tools
+        <div id="main-menu-dropdown" class="hidden absolute right-0 mt-2 w-64 studio-modal p-1.5 z-50 text-sm anim-pop">
+          <div class="px-2.5 py-1.5 text-[11px] font-medium text-zinc-500 border-b border-white/[0.06]">
+            Workspace
           </div>
           <div class="py-1 space-y-0.5">
-            <button onclick="openTableJumpModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <span class="text-zinc-200">Find / Jump to Table</span>
-              <kbd class="text-xs font-mono px-2 py-0.5 rounded bg-black/60 text-emerald-400 border border-white/10">Ctrl+K</kbd>
+            <button onclick="document.getElementById('main-menu-dropdown').classList.add('hidden'); fetchSchema();" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-zinc-200 text-xs">Refresh Schema</span>
+              <kbd class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/[0.08]">R</kbd>
             </button>
-            <button onclick="toggleMermaidModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <span class="text-zinc-200">View Mermaid.js Grammar</span>
-              <kbd class="text-xs font-mono px-2 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/10">G</kbd>
+            <button onclick="openTableJumpModal()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-zinc-200 text-xs">Jump to Table</span>
+              <kbd class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-emerald-400 border border-white/[0.08]">Ctrl+K</kbd>
             </button>
-            <button onclick="copyMermaidMarkdown()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <span class="text-zinc-200">Copy Mermaid Markdown</span>
-              <span class="text-xs font-mono text-emerald-400">Copy</span>
+            <button onclick="toggleMermaidModal()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-zinc-200 text-xs">View Mermaid Grammar</span>
+              <kbd class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/[0.08]">G</kbd>
             </button>
-            <button onclick="downloadSvg()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <span class="text-zinc-200">Export Diagram as SVG</span>
-              <span class="text-xs font-mono text-emerald-400">.svg</span>
+            <button onclick="copyMermaidMarkdown()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-zinc-200 text-xs">Copy Mermaid DSL</span>
+              <span class="text-[11px] font-mono text-zinc-500">Copy</span>
             </button>
-            <button onclick="toggleMinimap()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <span class="text-zinc-200">Toggle Radar Minimap</span>
-              <span id="menu-minimap-state" class="text-xs font-mono text-zinc-400">Off</span>
+            <button onclick="downloadSvg()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-zinc-200 text-xs">Export SVG</span>
+              <span class="text-[11px] font-mono text-zinc-500">.svg</span>
+            </button>
+            <button onclick="toggleMinimap()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-zinc-200 text-xs">Radar Minimap</span>
+              <span id="menu-minimap-state" class="text-[11px] font-mono text-zinc-500">Off</span>
             </button>
           </div>
-          <div class="border-t border-white/[0.07] pt-1 mt-1 space-y-0.5">
-            <button onclick="initializeSampleLabSchema()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <span class="text-emerald-300 font-medium">Provision 6 Lab Tables</span>
-              <span class="text-xs font-mono text-emerald-400">SQL</span>
+          <div class="border-t border-white/[0.06] pt-1 mt-1 space-y-0.5">
+            <button onclick="initializeSampleLabSchema()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-emerald-300 text-xs font-medium">Provision 6 Lab Tables</span>
+              <span class="text-[11px] font-mono text-emerald-400/80">SQL</span>
             </button>
-            <button onclick="openOnboardingModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <span class="text-zinc-200">Quick-Start Checklist</span>
-              <span class="text-xs font-mono text-zinc-400">Guide</span>
+            <button onclick="openOnboardingModal()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-zinc-200 text-xs">Quick-Start Guide</span>
+              <span class="text-[11px] text-zinc-500">Guide</span>
             </button>
-            <button onclick="openShortcutsModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition">
-              <span class="text-zinc-200">Keyboard Shortcuts</span>
-              <kbd class="text-xs font-mono px-2 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/10">?</kbd>
+            <button onclick="openShortcutsModal()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
+              <span class="text-zinc-200 text-xs">Keyboard Shortcuts</span>
+              <kbd class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/[0.08]">?</kbd>
             </button>
           </div>
         </div>
@@ -480,27 +521,47 @@
     <section class="lg:w-[60%] flex flex-col studio-card overflow-hidden relative min-h-[420px] lg:min-h-0">
 
       <!-- Clean Canvas Header Bar -->
-      <div class="h-14 px-5 border-b border-white/[0.07] bg-[#070a08] flex items-center justify-between shrink-0 z-10">
-        <div class="flex items-center space-x-3">
-          <h2 class="text-base font-semibold text-white">Schema Diagram</h2>
-          <span class="text-sm font-mono px-2.5 py-0.5 rounded-lg bg-white/[0.04] text-emerald-400 border border-white/[0.06]" id="table-count-badge">0 tables · 0 FKs</span>
+      <div class="h-12 px-4 border-b border-white/[0.06] bg-[#070a08] flex items-center justify-between shrink-0 z-20">
+        <div class="flex items-center space-x-2.5">
+          <h2 class="text-sm font-semibold text-zinc-100">Schema Diagram</h2>
+          <span class="text-xs font-mono text-zinc-500" id="table-count-badge">0 tables · 0 FKs</span>
         </div>
 
-        <!-- Clean Contextual Canvas Actions -->
-        <div class="flex items-center space-x-2">
-          <button onclick="openTableJumpModal()" title="Search &amp; Jump to Table (Ctrl+K)" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl text-sm font-mono btn-surface">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <span>Search</span>
-            <kbd class="text-xs text-zinc-400 hidden sm:inline">⌘K</kbd>
+        <!-- Quiet Search Icon + Overflow Menu -->
+        <div class="flex items-center space-x-1">
+          <button onclick="openTableJumpModal()" title="Jump to Table (Ctrl+K)" aria-label="Jump to Table" class="w-8 h-8 rounded-lg flex items-center justify-center btn-quiet">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </button>
 
-          <button onclick="copyMermaidMarkdown()" title="Copy Mermaid Syntax" class="px-3 py-1.5 rounded-xl text-sm font-medium btn-surface hidden sm:inline-flex items-center space-x-1.5">
-            <span>Copy DSL</span>
-          </button>
+          <div class="relative" id="canvas-menu-wrapper">
+            <button onclick="toggleCanvasMenu(event)" title="Diagram Actions" aria-label="Diagram Actions" class="w-8 h-8 rounded-lg flex items-center justify-center btn-quiet">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="19" cy="12" r="1.75"/></svg>
+            </button>
 
-          <button onclick="downloadSvg()" title="Download SVG Vector" class="px-3 py-1.5 rounded-xl text-sm font-medium btn-surface hidden sm:inline-flex items-center space-x-1.5">
-            <span>Export SVG</span>
-          </button>
+            <div id="canvas-menu-dropdown" class="hidden absolute right-0 mt-1.5 w-52 studio-modal p-1.5 z-50 text-xs anim-pop">
+              <button onclick="copyMermaidMarkdown(); document.getElementById('canvas-menu-dropdown').classList.add('hidden');" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-zinc-200 text-left transition">
+                <span>Copy Mermaid DSL</span>
+                <span class="font-mono text-zinc-500">Copy</span>
+              </button>
+              <button onclick="downloadSvg(); document.getElementById('canvas-menu-dropdown').classList.add('hidden');" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-zinc-200 text-left transition">
+                <span>Export SVG</span>
+                <span class="font-mono text-zinc-500">.svg</span>
+              </button>
+              <button onclick="toggleMermaidModal(); document.getElementById('canvas-menu-dropdown').classList.add('hidden');" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-zinc-200 text-left transition">
+                <span>View Mermaid Grammar</span>
+                <kbd class="font-mono text-zinc-500">G</kbd>
+              </button>
+              <button onclick="toggleMinimap(); document.getElementById('canvas-menu-dropdown').classList.add('hidden');" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-zinc-200 text-left transition">
+                <span>Radar Minimap</span>
+                <span id="canvas-minimap-state" class="font-mono text-zinc-500">Off</span>
+              </button>
+              <div class="border-t border-white/[0.06] my-1"></div>
+              <button onclick="fitErdToScreen(); document.getElementById('canvas-menu-dropdown').classList.add('hidden');" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-zinc-200 text-left transition">
+                <span>Fit to Screen</span>
+                <kbd class="font-mono text-zinc-500">F</kbd>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -526,6 +587,26 @@
           </div>
         </div>
 
+        <!-- Selected Table Quick Pill (Top-Left, shown only when a table is selected) -->
+        <div id="erd-selected-pill" class="erd-overlay-ui hidden absolute top-3 left-3 z-10 flex items-center space-x-2 pl-2.5 pr-1.5 py-1 rounded-lg bg-[#070a08]/85 border border-white/[0.08] backdrop-blur-md text-xs font-mono shadow-lg max-w-[65%]">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+          <span id="erd-selected-name" class="text-zinc-100 font-semibold truncate"></span>
+          <span id="erd-selected-meta" class="text-zinc-500 shrink-0"></span>
+          <button type="button" onclick="openInspectorModal('columns')" class="px-2 py-0.5 rounded-md text-emerald-400 hover:bg-emerald-500/15 font-medium transition shrink-0">Inspect</button>
+        </div>
+
+        <!-- Compact Floating ERD Legend (Top-Right, shown only when a table is selected) -->
+        <div id="erd-legend" class="erd-overlay-ui hidden absolute top-3 right-3 z-10 items-center space-x-3 px-2.5 py-1 rounded-lg bg-[#070a08]/80 border border-white/[0.06] backdrop-blur-md text-[11px] text-zinc-400 shadow-lg">
+          <span class="inline-flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-sm border border-emerald-400 bg-emerald-500/20"></span>
+            <span>Selected</span>
+          </span>
+          <span class="inline-flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-sm border border-dashed border-amber-400 bg-amber-500/10"></span>
+            <span>Parent FK</span>
+          </span>
+        </div>
+
         <!-- Zoomable & Pannable Mermaid Wrapper -->
         <div id="erd-wrapper" class="w-full h-full flex items-center justify-center origin-center">
           <div id="erd-output" class="mermaid flex items-center justify-center">
@@ -534,21 +615,26 @@
         </div>
 
         <!-- Optional Radar Minimap (Hidden by default; toggled from Tools menu) -->
-        <div id="erd-minimap" class="hidden absolute bottom-16 right-4 w-44 h-32 rounded-xl bg-[#070a08]/95 border border-emerald-500/30 p-2 shadow-2xl pointer-events-none flex flex-col justify-between z-10">
+        <div id="erd-minimap" class="hidden absolute bottom-16 right-4 w-44 h-32 rounded-xl bg-[#070a08]/95 border border-emerald-500/25 p-2 shadow-2xl pointer-events-none flex flex-col justify-between z-10">
           <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
-            <span>MINIMAP</span>
+            <span>Minimap</span>
             <span id="minimap-scale-lbl" class="text-emerald-400">100%</span>
           </div>
           <div id="minimap-preview" class="flex-1 flex items-center justify-center overflow-hidden opacity-75"></div>
         </div>
 
-        <!-- Floating Bottom Zoom & Fit Bar (Large, readable controls) -->
-        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-[#070a08]/95 border border-white/[0.1] backdrop-blur-md font-mono text-sm shadow-2xl">
-          <button onclick="zoomErd(-0.15)" title="Zoom Out (-)" class="w-8 h-8 rounded-lg hover:bg-white/[0.08] text-zinc-300 hover:text-white flex items-center justify-center transition text-base font-bold">−</button>
-          <button id="zoom-pct-label" onclick="resetZoom()" title="Reset to 100% (0)" class="px-2.5 py-1 rounded-lg hover:bg-white/[0.08] text-zinc-200 hover:text-white transition min-w-[60px] text-center font-semibold">100%</button>
-          <button onclick="zoomErd(0.15)" title="Zoom In (+)" class="w-8 h-8 rounded-lg hover:bg-white/[0.08] text-zinc-300 hover:text-white flex items-center justify-center transition text-base font-bold">+</button>
-          <div class="h-4 w-px bg-white/15 mx-1"></div>
-          <button onclick="fitErdToScreen()" title="Fit Diagram to Screen (F)" class="px-3 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-semibold transition">Fit</button>
+        <!-- Refined Floating Bottom Zoom & Fit Bar + Auto-Fading Hint -->
+        <div class="erd-overlay-ui absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 pointer-events-none">
+          <div id="erd-interaction-hint" class="text-[11px] text-zinc-500 bg-[#050706]/75 px-2.5 py-0.5 rounded-full border border-white/[0.05] whitespace-nowrap transition-opacity duration-500">
+            Drag to pan · Scroll to zoom · Click table · Double-click to inspect
+          </div>
+          <div class="pointer-events-auto flex items-center space-x-1 px-2 py-1 rounded-xl bg-[#070a08]/90 border border-white/[0.08] backdrop-blur-md font-mono text-xs shadow-xl">
+            <button onclick="zoomErd(-0.15)" title="Zoom Out (-)" aria-label="Zoom Out" class="w-7 h-7 rounded-lg hover:bg-white/[0.07] text-zinc-400 hover:text-white flex items-center justify-center transition">−</button>
+            <button id="zoom-pct-label" onclick="resetZoom()" title="Reset to 100% (0)" class="px-2 py-1 rounded-lg hover:bg-white/[0.07] text-zinc-300 hover:text-white transition min-w-[48px] text-center font-medium">100%</button>
+            <button onclick="zoomErd(0.15)" title="Zoom In (+)" aria-label="Zoom In" class="w-7 h-7 rounded-lg hover:bg-white/[0.07] text-zinc-400 hover:text-white flex items-center justify-center transition">+</button>
+            <div class="h-3.5 w-px bg-white/10 mx-0.5"></div>
+            <button onclick="fitErdToScreen()" title="Fit Diagram to Screen (F)" class="px-2.5 py-1 rounded-lg hover:bg-emerald-500/15 text-emerald-400 font-medium transition">Fit</button>
+          </div>
         </div>
       </div>
     </section>
@@ -559,62 +645,63 @@
     <section class="lg:w-[40%] flex flex-col gap-4 min-h-0">
 
       <!-- Card 1: Data Injection Studio -->
-      <div class="studio-card p-6 flex flex-col space-y-5 shrink-0">
+      <div class="studio-card p-5 flex flex-col space-y-4 shrink-0">
         <!-- Studio Header -->
-        <div class="flex items-center justify-between border-b border-white/[0.07] pb-3.5">
-          <div>
-            <h2 class="text-lg font-bold text-white">Data Injection Studio</h2>
-          </div>
-          <!-- Button to pop up Engine Options (Batch size & Dependency Chain) -->
-          <button type="button" onclick="openEngineOptionsModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-mono btn-surface" title="Configure Batch Size &amp; Dependency Seeding">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span id="lbl-engine-summary">Batch: 1,000 · Auto-Parent</span>
-            <span>⚙</span>
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-zinc-100">Data Injection Studio</h2>
+          <!-- Quiet Gear Icon Button with Dynamic Tooltip -->
+          <button type="button" id="btn-engine-options" onclick="openEngineOptionsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center btn-quiet" title="Engine Options — Batch: 1,000 · Auto-Parent" aria-label="Seeder Engine Options">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span id="lbl-engine-summary" class="sr-only">Batch: 1,000 · Auto-Parent</span>
           </button>
         </div>
 
         <!-- Step 1: Custom App-Themed Target Table Selector -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
-            <label class="text-sm font-semibold text-zinc-200">1. Target Table</label>
-            <!-- Single clean button that opens the unified Table Inspector Modal (Columns, Sample Preview, FK Chain) -->
-            <button type="button" onclick="openInspectorModal('columns')" class="text-sm font-medium text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 transition">
-              <span>Inspect Schema &amp; Sample</span>
-              <span>→</span>
+            <label class="text-xs font-medium text-zinc-400">Target table</label>
+            <button type="button" onclick="openInspectorModal('columns')" class="text-xs text-zinc-400 hover:text-emerald-400 transition">
+              Inspect ↗
             </button>
           </div>
 
           <!-- Hidden native select kept synced for accessibility/form compatibility -->
           <select id="select-table" class="sr-only" onchange="onTableSelected()" aria-label="Target Table"></select>
 
-          <!-- 100% Custom App-Themed Dropdown (Zero ugly native OS select menus!) -->
+          <!-- Custom App-Themed Dropdown -->
           <div class="relative" id="custom-table-select-wrapper">
-            <button type="button" id="custom-table-trigger" onclick="toggleCustomTableDropdown(event)" class="w-full studio-input px-4 py-3.5 flex items-center justify-between text-left cursor-pointer">
-              <div class="flex items-center space-x-3 truncate">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></span>
-                <span id="custom-table-label" class="text-base font-mono font-semibold text-white truncate">Select table...</span>
+            <button type="button" id="custom-table-trigger" onclick="toggleCustomTableDropdown(event)" class="w-full studio-input px-3.5 py-2.5 flex items-center justify-between text-left cursor-pointer">
+              <div class="flex items-center space-x-2.5 truncate">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                <span id="custom-table-label" class="text-sm font-mono font-semibold text-white truncate">Select table...</span>
               </div>
-              <div class="flex items-center space-x-3 shrink-0">
-                <span id="custom-table-meta" class="text-xs font-mono px-2.5 py-1 rounded-md bg-black/50 text-zinc-300 border border-white/[0.07]">0 rows</span>
-                <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              <div class="flex items-center space-x-2.5 shrink-0">
+                <span id="custom-table-meta" class="text-xs font-mono text-zinc-400">0 rows</span>
+                <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
             </button>
 
             <!-- Custom Dropdown Menu -->
-            <div id="custom-table-menu" class="hidden absolute left-0 right-0 mt-2 studio-modal p-2 z-40 max-h-72 overflow-y-auto space-y-1 anim-pop"></div>
+            <div id="custom-table-menu" class="hidden absolute left-0 right-0 mt-1.5 studio-modal p-1.5 z-40 max-h-64 overflow-y-auto space-y-0.5 anim-pop"></div>
           </div>
+
+          <!-- Inline Dependency Callout -->
+          <div id="dependency-callout" class="hidden rounded-xl px-3.5 py-2.5 text-xs border transition"></div>
         </div>
 
-        <!-- Step 2: Row Volume Controls (Zero Native Spinbuttons!) -->
-        <div class="space-y-3">
+        <!-- Step 2: Row Volume Controls -->
+        <div class="space-y-2.5">
           <div class="flex items-center justify-between">
-            <label for="input-rows" class="text-sm font-semibold text-zinc-200">2. Rows to Generate</label>
+            <label for="input-rows" class="text-xs font-medium text-zinc-400">Rows to generate</label>
 
-            <!-- Custom App-Themed Number Input with - / + Stepper Buttons -->
-            <div class="flex items-center bg-[#0d120f] border border-white/[0.12] rounded-xl p-1">
-              <button type="button" onclick="stepRowCount(-500)" class="w-8 h-8 rounded-lg hover:bg-white/[0.08] text-zinc-300 hover:text-white font-mono text-base font-bold flex items-center justify-center transition" title="Decrease by 500">−</button>
-              <input id="input-rows" type="number" min="100" max="50000" step="100" value="1000" oninput="syncRowsFromInput(this.value)" class="w-24 text-center bg-transparent border-none text-base font-mono font-bold text-emerald-400 focus:outline-none focus:ring-0" />
-              <button type="button" onclick="stepRowCount(500)" class="w-8 h-8 rounded-lg hover:bg-white/[0.08] text-zinc-300 hover:text-white font-mono text-base font-bold flex items-center justify-center transition" title="Increase by 500">+</button>
+            <!-- Lightweight Stepper Input -->
+            <div class="flex items-center bg-[#0b100d] border border-white/[0.07] rounded-lg p-0.5">
+              <button type="button" onclick="stepRowCount(-500)" class="w-7 h-7 rounded-md hover:bg-white/[0.06] text-zinc-400 hover:text-white font-mono text-sm flex items-center justify-center transition" title="Decrease by 500">−</button>
+              <input id="input-rows" type="number" min="100" max="50000" step="100" value="1000" oninput="syncRowsFromInput(this.value)" class="w-20 text-center bg-transparent border-none text-sm font-mono font-semibold text-emerald-400 focus:outline-none focus:ring-0" />
+              <button type="button" onclick="stepRowCount(500)" class="w-7 h-7 rounded-md hover:bg-white/[0.06] text-zinc-400 hover:text-white font-mono text-sm flex items-center justify-center transition" title="Increase by 500">+</button>
             </div>
           </div>
 
@@ -622,18 +709,18 @@
           <input id="slider-rows" type="range" min="100" max="50000" step="100" value="1000" oninput="syncRowsFromSlider(this.value)" class="w-full" />
 
           <!-- Quick Preset Pills -->
-          <div class="grid grid-cols-4 gap-2 pt-0.5">
-            <button type="button" onclick="setExactRows(500)" class="py-1.5 rounded-lg text-xs font-mono font-medium btn-surface">500</button>
-            <button type="button" onclick="setExactRows(1000)" class="py-1.5 rounded-lg text-xs font-mono font-medium btn-surface">1,000</button>
-            <button type="button" onclick="setExactRows(10000)" class="py-1.5 rounded-lg text-xs font-mono font-medium btn-surface">10,000</button>
-            <button type="button" onclick="setExactRows(50000)" class="py-1.5 rounded-lg text-xs font-mono font-medium btn-surface">50,000</button>
+          <div id="row-preset-group" class="grid grid-cols-4 gap-1.5">
+            <button type="button" data-rows="500" onclick="setExactRows(500)" class="py-1 rounded-lg text-xs font-mono text-zinc-400 bg-white/[0.02] border border-white/[0.05] hover:text-zinc-200 hover:border-white/10 transition">500</button>
+            <button type="button" data-rows="1000" onclick="setExactRows(1000)" class="py-1 rounded-lg text-xs font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 font-semibold transition" aria-pressed="true">1,000</button>
+            <button type="button" data-rows="10000" onclick="setExactRows(10000)" class="py-1 rounded-lg text-xs font-mono text-zinc-400 bg-white/[0.02] border border-white/[0.05] hover:text-zinc-200 hover:border-white/10 transition">10,000</button>
+            <button type="button" data-rows="50000" onclick="setExactRows(50000)" class="py-1 rounded-lg text-xs font-mono text-zinc-400 bg-white/[0.02] border border-white/[0.05] hover:text-zinc-200 hover:border-white/10 transition">50,000</button>
           </div>
         </div>
 
-        <!-- Step 3: Primary CTA Button -->
-        <div class="space-y-2.5 pt-1">
-          <button id="btn-inject" onclick="handleInjectClick()" class="w-full py-3.5 px-5 rounded-xl btn-emerald text-base font-mono tracking-wide flex items-center justify-center space-x-2.5 disabled:opacity-40 disabled:cursor-not-allowed">
-            <svg id="inject-spinner" class="w-5 h-5 animate-spin hidden text-slate-950" fill="none" viewBox="0 0 24 24">
+        <!-- Step 3: Primary CTA Hero Button -->
+        <div class="space-y-2 pt-1">
+          <button id="btn-inject" onclick="handleInjectClick()" class="w-full py-3 px-4 rounded-xl btn-emerald text-sm font-mono tracking-wide flex items-center justify-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg id="inject-spinner" class="w-4 h-4 animate-spin hidden text-slate-950" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
             </svg>
@@ -642,10 +729,10 @@
 
           <!-- Live Batch Progress Bar -->
           <div id="seed-progress-container" class="hidden space-y-1.5 pt-1">
-            <div class="w-full h-2 bg-[#141d18] rounded-full overflow-hidden">
+            <div class="w-full h-1.5 bg-[#141d18] rounded-full overflow-hidden">
               <div id="seed-progress-bar" class="h-full bg-emerald-400 transition-all duration-150" style="width: 0%;"></div>
             </div>
-            <div class="flex justify-between text-xs font-mono text-zinc-300">
+            <div class="flex justify-between text-xs font-mono text-zinc-400">
               <span id="seed-progress-label">Batch 0 / 0</span>
               <span id="seed-progress-pct" class="text-emerald-400 font-semibold">0%</span>
             </div>
@@ -653,45 +740,70 @@
         </div>
       </div>
 
-      <!-- Card 2: Telemetry & Activity Console -->
-      <div class="flex-1 studio-card p-5 flex flex-col min-h-[200px]">
-        <!-- Console Header -->
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.07] pb-3 mb-3 shrink-0">
-          <div class="flex items-center space-x-2.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-            <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-200">Telemetry Console</h3>
-            <span id="sim-metric-tag" class="hidden text-xs font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">Simulated</span>
+      <!-- Card 2: Compact Collapsible Telemetry Console -->
+      <div id="telemetry-card" class="flex-1 studio-card p-4 flex flex-col min-h-0">
+        <!-- Console Header / One-Line Status Bar when Collapsed -->
+        <div class="flex items-center justify-between gap-2 shrink-0">
+          <div class="flex items-center space-x-2 min-w-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+            <h3 class="text-sm font-semibold text-zinc-200">Console</h3>
+            <span id="sim-metric-tag" class="hidden text-[11px] font-mono text-amber-300/90">· Simulated</span>
+            <span id="console-collapsed-summary" class="hidden text-xs font-mono text-zinc-400 truncate">Idle · 0 rows · 0 ms</span>
           </div>
 
-          <!-- Filter & History Triggers -->
-          <div class="flex items-center space-x-1.5 text-xs font-mono">
-            <button onclick="setLogFilter('ALL')" id="flt-all" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-semibold">All</button>
-            <button onclick="setLogFilter('ERROR')" id="flt-error" class="px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400">Errors</button>
-            <button onclick="setLogFilter('METRICS')" id="flt-metrics" class="px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400">Metrics</button>
-            <button onclick="openRunHistoryModal()" class="px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-300" title="View Run History">History (<span id="run-history-count">0</span>)</button>
-            <button onclick="clearLogs()" class="px-2 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400 hover:text-white">Clear</button>
+          <!-- Compact Segmented Filter + Overflow + Collapse Toggle -->
+          <div class="flex items-center space-x-1.5 shrink-0">
+            <div id="console-filter-segment" class="flex items-center bg-black/40 p-0.5 rounded-lg border border-white/[0.06] text-[11px] font-mono">
+              <button onclick="setLogFilter('ALL')" id="flt-all" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-medium">All</button>
+              <button onclick="setLogFilter('ERROR')" id="flt-error" class="px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200">Errors</button>
+              <button onclick="setLogFilter('METRICS')" id="flt-metrics" class="px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200">Metrics</button>
+            </div>
+
+            <!-- Overflow Menu (History + Clear) -->
+            <div class="relative" id="console-menu-wrapper">
+              <button onclick="toggleConsoleMenu(event)" title="Console Options" aria-label="Console Options" class="w-7 h-7 rounded-lg flex items-center justify-center btn-quiet">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="19" cy="12" r="1.75"/></svg>
+              </button>
+              <div id="console-menu-dropdown" class="hidden absolute right-0 mt-1.5 w-44 studio-modal p-1.5 z-50 text-xs anim-pop">
+                <button onclick="openRunHistoryModal(); document.getElementById('console-menu-dropdown').classList.add('hidden');" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-zinc-200 text-left transition">
+                  <span>Run History</span>
+                  <span class="font-mono text-zinc-400">(<span id="run-history-count">0</span>)</span>
+                </button>
+                <button onclick="clearLogs(); document.getElementById('console-menu-dropdown').classList.add('hidden');" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white text-left transition">
+                  <span>Clear Logs</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Collapse / Expand Console -->
+            <button id="btn-toggle-console" onclick="toggleTelemetryConsole()" title="Collapse console" aria-label="Toggle Console" class="w-7 h-7 rounded-lg flex items-center justify-center btn-quiet">
+              <svg id="console-chevron" class="w-4 h-4 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
           </div>
         </div>
 
-        <!-- Live Telemetry KPI Strip -->
-        <div class="grid grid-cols-3 gap-2.5 mb-3 shrink-0 font-mono">
-          <div class="p-2.5 rounded-xl bg-[#0d120f] border border-white/[0.05]">
-            <div class="text-xs text-zinc-400">STATUS</div>
-            <div id="metric-status" class="text-sm font-semibold text-zinc-200 mt-0.5">Idle</div>
+        <!-- Collapsible Console Body -->
+        <div id="telemetry-body" class="flex-1 flex flex-col min-h-0 mt-3 pt-3 border-t border-white/[0.06]">
+          <!-- Slim Telemetry KPI Strip -->
+          <div class="grid grid-cols-3 gap-2 mb-2.5 shrink-0 font-mono">
+            <div class="px-2.5 py-1.5 rounded-lg bg-[#0b100d] border border-white/[0.05] flex items-center justify-between">
+              <span class="text-[11px] text-zinc-500">Status</span>
+              <span id="metric-status" class="text-xs font-semibold text-zinc-200">Idle</span>
+            </div>
+            <div class="px-2.5 py-1.5 rounded-lg bg-[#0b100d] border border-white/[0.05] flex items-center justify-between">
+              <span class="text-[11px] text-zinc-500">Inserted</span>
+              <span id="metric-rows" class="text-xs font-semibold text-emerald-400">0 rows</span>
+            </div>
+            <div class="px-2.5 py-1.5 rounded-lg bg-[#0b100d] border border-white/[0.05] flex items-center justify-between">
+              <span class="text-[11px] text-zinc-500">Latency</span>
+              <span id="metric-latency" class="text-xs font-semibold text-zinc-200">0 ms</span>
+            </div>
           </div>
-          <div class="p-2.5 rounded-xl bg-[#0d120f] border border-white/[0.05]">
-            <div class="text-xs text-zinc-400">INSERTED</div>
-            <div id="metric-rows" class="text-sm font-semibold text-emerald-400 mt-0.5">0 rows</div>
-          </div>
-          <div class="p-2.5 rounded-xl bg-[#0d120f] border border-white/[0.05]">
-            <div class="text-xs text-zinc-400">LATENCY</div>
-            <div id="metric-latency" class="text-sm font-semibold text-zinc-200 mt-0.5">0 ms</div>
-          </div>
-        </div>
 
-        <!-- Log Stream (Readable 13.5px Monospace) -->
-        <div id="telemetry-logs" class="flex-1 overflow-y-auto space-y-2 font-mono text-sm pr-1 select-text text-zinc-300">
-          <div class="text-zinc-400">[SYSTEM] Structura Forge Studio initialized.</div>
+          <!-- Compact Log Stream -->
+          <div id="telemetry-logs" class="flex-1 overflow-y-auto space-y-1.5 font-mono text-xs pr-1 select-text text-zinc-300">
+            <div class="text-zinc-500">[SYSTEM] Structura Forge Studio initialized.</div>
+          </div>
         </div>
       </div>
 
@@ -788,10 +900,14 @@
   <div id="modal-jump" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center pt-24 p-4">
     <div class="studio-modal max-w-md w-full p-4 space-y-3 font-mono anim-pop">
       <div class="relative">
-        <input id="jump-search-input" type="text" oninput="filterJumpTables(this.value)" placeholder="Search table name..." class="w-full studio-input pl-4 pr-14 py-3 text-base" />
+        <input id="jump-search-input" type="text" oninput="filterJumpTables(this.value)" onkeydown="handleJumpInputKeydown(event)" placeholder="Search table name..." class="w-full studio-input pl-4 pr-14 py-3 text-base" />
         <kbd class="absolute right-3 top-3.5 text-xs px-2 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/10">ESC</kbd>
       </div>
-      <div id="jump-table-list" class="max-h-64 overflow-y-auto space-y-1 text-sm"></div>
+      <div id="jump-table-list" role="listbox" class="max-h-64 overflow-y-auto space-y-1 text-sm"></div>
+      <div class="flex items-center justify-between pt-2 border-t border-white/[0.07] text-[11px] text-zinc-500">
+        <span>↑↓ navigate · Enter select</span>
+        <span>Esc close</span>
+      </div>
     </div>
   </div>
 
@@ -1113,6 +1229,10 @@
     let runHistory = [];
     let pendingLargeSeedConfirmed = false;
     let minimapEnabled = false;
+    let jumpActiveIndex = 0;
+    let jumpFilteredTables = [];
+    let erdDidDrag = false;
+    let modalBackdropMouseDown = null;
 
     // Initialize Mermaid with Larger, High-Contrast Typography
     mermaid.initialize({
@@ -1128,14 +1248,15 @@
         secondaryColor: '#090e0b',
         tertiaryColor: '#0f1713',
         fontFamily: 'JetBrains Mono, monospace',
-        fontSize: '13.5px'
+        fontSize: '12px'
       },
       er: {
         useMaxWidth: false,
         layoutDirection: 'TB',
-        minEntityWidth: 130,
-        minEntityHeight: 85,
-        entityPadding: 15
+        fontSize: 12,
+        minEntityWidth: 150,
+        minEntityHeight: 75,
+        entityPadding: 18
       }
     });
 
@@ -1169,34 +1290,74 @@
     function closeModal(id) {
       document.getElementById(id).classList.add('hidden');
     }
+    function isAnyModalOpen() {
+      return Array.from(document.querySelectorAll('.fixed[id^="modal-"]')).some(
+        m => !m.classList.contains('hidden')
+      );
+    }
+
+    // Backdrop Click-Outside to Close Modals
+    document.querySelectorAll('.fixed[id^="modal-"]').forEach(backdrop => {
+      backdrop.addEventListener('mousedown', (e) => {
+        modalBackdropMouseDown = e.target === backdrop ? backdrop : null;
+      });
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop && modalBackdropMouseDown === backdrop) {
+          closeModal(backdrop.id);
+        }
+        modalBackdropMouseDown = null;
+      });
+    });
 
     // Popover Toggles
+    function closeAllPopovers(exceptId = null) {
+      ['conn-dropdown', 'main-menu-dropdown', 'custom-table-menu', 'canvas-menu-dropdown', 'console-menu-dropdown'].forEach(id => {
+        if (id !== exceptId) {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        }
+      });
+    }
     function toggleConnMenu(e) {
       e.stopPropagation();
-      document.getElementById('main-menu-dropdown').classList.add('hidden');
-      document.getElementById('custom-table-menu').classList.add('hidden');
+      closeAllPopovers('conn-dropdown');
       document.getElementById('conn-dropdown').classList.toggle('hidden');
     }
     function toggleMainMenu(e) {
       e.stopPropagation();
-      document.getElementById('conn-dropdown').classList.add('hidden');
-      document.getElementById('custom-table-menu').classList.add('hidden');
+      closeAllPopovers('main-menu-dropdown');
       document.getElementById('main-menu-dropdown').classList.toggle('hidden');
     }
     function toggleCustomTableDropdown(e) {
       e.stopPropagation();
-      document.getElementById('conn-dropdown').classList.add('hidden');
-      document.getElementById('main-menu-dropdown').classList.add('hidden');
+      closeAllPopovers('custom-table-menu');
       document.getElementById('custom-table-menu').classList.toggle('hidden');
+    }
+    function toggleCanvasMenu(e) {
+      e.stopPropagation();
+      closeAllPopovers('canvas-menu-dropdown');
+      document.getElementById('canvas-menu-dropdown').classList.toggle('hidden');
+    }
+    function toggleConsoleMenu(e) {
+      e.stopPropagation();
+      closeAllPopovers('console-menu-dropdown');
+      document.getElementById('console-menu-dropdown').classList.toggle('hidden');
     }
 
     window.addEventListener('click', (e) => {
-      const conn = document.getElementById('conn-dropdown');
-      if (conn && !conn.contains(e.target)) conn.classList.add('hidden');
-      const menu = document.getElementById('main-menu-dropdown');
-      if (menu && !menu.contains(e.target)) menu.classList.add('hidden');
-      const tbl = document.getElementById('custom-table-menu');
-      if (tbl && !tbl.contains(e.target)) tbl.classList.add('hidden');
+      [
+        ['conn-menu-wrapper', 'conn-dropdown'],
+        ['main-menu-wrapper', 'main-menu-dropdown'],
+        ['custom-table-select-wrapper', 'custom-table-menu'],
+        ['canvas-menu-wrapper', 'canvas-menu-dropdown'],
+        ['console-menu-wrapper', 'console-menu-dropdown']
+      ].forEach(([wrapId, dropId]) => {
+        const wrap = document.getElementById(wrapId);
+        const drop = document.getElementById(dropId);
+        if (drop && wrap && !wrap.contains(e.target)) {
+          drop.classList.add('hidden');
+        }
+      });
     });
 
     // Modal Triggers
@@ -1238,6 +1399,7 @@
     }
     function openTableJumpModal() {
       document.getElementById('main-menu-dropdown').classList.add('hidden');
+      jumpActiveIndex = 0;
       renderJumpList('');
       openModal('modal-jump');
       setTimeout(() => {
@@ -1248,23 +1410,40 @@
     }
 
     // Row Volume Synchronization (Input <-> Slider <-> Presets <-> Steppers)
+    function updateRowPresetHighlight(val) {
+      const num = parseInt(val, 10);
+      document.querySelectorAll('#row-preset-group button[data-rows]').forEach(btn => {
+        const preset = parseInt(btn.getAttribute('data-rows'), 10);
+        if (preset === num) {
+          btn.className = 'py-1 rounded-lg text-xs font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 font-semibold transition';
+          btn.setAttribute('aria-pressed', 'true');
+        } else {
+          btn.className = 'py-1 rounded-lg text-xs font-mono text-zinc-400 bg-white/[0.02] border border-white/[0.05] hover:text-zinc-200 hover:border-white/10 transition';
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      });
+    }
+
     function syncRowsFromInput(val) {
       let num = parseInt(val, 10);
       if (isNaN(num)) num = 1000;
       num = Math.min(50000, Math.max(100, num));
       document.getElementById('slider-rows').value = num;
+      updateRowPresetHighlight(parseInt(val, 10));
       updateInjectButtonLabel();
     }
 
     function syncRowsFromSlider(val) {
       const num = parseInt(val, 10) || 1000;
       document.getElementById('input-rows').value = num;
+      updateRowPresetHighlight(num);
       updateInjectButtonLabel();
     }
 
     function setExactRows(num) {
       document.getElementById('input-rows').value = num;
       document.getElementById('slider-rows').value = num;
+      updateRowPresetHighlight(num);
       updateInjectButtonLabel();
     }
 
@@ -1290,8 +1469,10 @@
 
     function onEngineOptionChanged() {
       const autoSeed = document.getElementById('chk-auto-seed-parents').checked;
-      document.getElementById('lbl-engine-summary').textContent =
-        `Batch: ${selectedBatchSize.toLocaleString()} · ${autoSeed ? 'Auto-Parent' : 'Strict FK'}`;
+      const summary = `Batch: ${selectedBatchSize.toLocaleString()} · ${autoSeed ? 'Auto-Parent' : 'Strict FK'}`;
+      document.getElementById('lbl-engine-summary').textContent = summary;
+      const gearBtn = document.getElementById('btn-engine-options');
+      if (gearBtn) gearBtn.title = `Engine Options — ${summary}`;
       onTableSelected();
     }
 
@@ -1469,6 +1650,13 @@
       if (!tables || tables.length === 0) {
         document.getElementById('custom-table-label').textContent = 'No tables available';
         document.getElementById('custom-table-meta').textContent = '0 rows';
+        const callout = document.getElementById('dependency-callout');
+        if (callout) callout.classList.add('hidden');
+        const pill = document.getElementById('erd-selected-pill');
+        if (pill) pill.classList.add('hidden');
+        const legend = document.getElementById('erd-legend');
+        if (legend) { legend.classList.add('hidden'); legend.classList.remove('sm:flex'); }
+        updateInjectButtonLabel();
         return;
       }
 
@@ -1529,7 +1717,59 @@
         `${(tableMeta.row_count || 0).toLocaleString()} rows · ${fkCount} FK`;
 
       highlightErdTable(tableName);
+      updateDependencyCallout();
       updateInjectButtonLabel();
+    }
+
+    function enableAutoSeedParents() {
+      const chk = document.getElementById('chk-auto-seed-parents');
+      if (chk) {
+        chk.checked = true;
+        onEngineOptionChanged();
+        showToast('Enabled Auto-Parent dependency seeding');
+      }
+    }
+
+    function updateDependencyCallout() {
+      const callout = document.getElementById('dependency-callout');
+      if (!callout) return;
+      const tableName = document.getElementById('select-table').value;
+      if (!schemaData || !tableName) {
+        callout.classList.add('hidden');
+        return;
+      }
+
+      const emptyAncestors = getEmptyAncestorTables(tableName);
+      if (emptyAncestors.length === 0) {
+        callout.classList.add('hidden');
+        return;
+      }
+
+      const autoSeed = document.getElementById('chk-auto-seed-parents').checked;
+      const ancestorBadges = emptyAncestors
+        .map(a => `<code class="px-1.5 py-0.5 rounded bg-black/45 border border-white/10 font-mono text-amber-200">${escapeHtml(a.table_name)}</code>`)
+        .join(' <span class="text-zinc-500">→</span> ');
+
+      if (autoSeed) {
+        callout.className = 'rounded-xl px-3.5 py-2.5 text-xs border bg-amber-500/10 border-amber-500/30 text-amber-100 flex items-center justify-between gap-2.5';
+        callout.innerHTML = `
+          <div class="leading-relaxed">
+            <span class="font-semibold text-amber-300">Auto-Parent:</span> 50 rows will be seeded into empty parent${emptyAncestors.length > 1 ? 's' : ''} (${ancestorBadges}) first.
+          </div>
+          <button type="button" onclick="openInspectorModal('chain')" class="shrink-0 px-2.5 py-1 rounded-lg bg-black/40 hover:bg-black/60 text-amber-300 border border-amber-500/30 font-mono transition">Order →</button>
+        `;
+      } else {
+        callout.className = 'rounded-xl px-3.5 py-2.5 text-xs border bg-rose-500/10 border-rose-500/35 text-rose-100 space-y-2';
+        callout.innerHTML = `
+          <div class="leading-relaxed">
+            <span class="font-semibold text-rose-300">Strict FK blocked:</span> Empty parent${emptyAncestors.length > 1 ? 's' : ''} (${ancestorBadges}) must be seeded first.
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="enableAutoSeedParents()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-mono font-semibold transition">Enable Auto-Parent</button>
+            <button type="button" onclick="openInspectorModal('chain')" class="px-2.5 py-1 rounded-lg bg-black/40 hover:bg-black/60 text-zinc-200 border border-white/10 font-mono transition">Dependency Order →</button>
+          </div>
+        `;
+      }
     }
 
     // Resolve all empty ancestor tables in topological dependency order (multi-hop safe)
@@ -1620,6 +1860,18 @@
       });
     }
 
+    function inspectForeignTable(tableName) {
+      if (!schemaData || !tableName) return;
+      const exists = schemaData.tables.some(t => t.table_name === tableName);
+      if (!exists) {
+        showToast(`Referenced table '${tableName}' not found`, 'error');
+        return;
+      }
+      selectTableByName(tableName);
+      openInspectorModal('columns');
+      showToast(`Inspecting parent table: ${tableName}`);
+    }
+
     function renderInspectorColumns() {
       const tableName = document.getElementById('select-table').value;
       const tableMeta = schemaData?.tables.find(t => t.table_name === tableName);
@@ -1635,18 +1887,42 @@
         const row = document.createElement('div');
         row.className = 'flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/[0.06] font-mono text-sm';
 
-        let badges = '';
-        if (col.is_pk) badges += '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-xs font-semibold ml-2">🔑 PK</span>';
-        if (col.is_fk) badges += `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-xs font-semibold ml-2">🔗 FK → ${col.foreign_table}</span>`;
-        if (isSeq) badges += '<span class="px-2 py-0.5 rounded bg-white/[0.06] text-zinc-400 text-xs ml-2">Auto-Seq</span>';
+        const left = document.createElement('div');
+        left.className = 'flex items-center flex-wrap gap-1.5 mr-3 min-w-0';
 
-        row.innerHTML = `
-          <div class="flex items-center truncate mr-3">
-            <span class="text-white font-semibold">${col.name}</span>
-            ${badges}
-          </div>
-          <span class="text-zinc-400 shrink-0">${formatShortSqlType(col.data_type, col.char_max_len)}</span>
-        `;
+        const colNameSpan = document.createElement('span');
+        colNameSpan.className = 'text-white font-semibold';
+        colNameSpan.textContent = col.name;
+        left.appendChild(colNameSpan);
+
+        if (col.is_pk) {
+          const pkBadge = document.createElement('span');
+          pkBadge.className = 'px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-xs font-semibold';
+          pkBadge.textContent = '🔑 PK';
+          left.appendChild(pkBadge);
+        }
+        if (col.is_fk && col.foreign_table) {
+          const fkBtn = document.createElement('button');
+          fkBtn.type = 'button';
+          fkBtn.className = 'px-2 py-0.5 rounded bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 text-xs font-semibold cursor-pointer transition inline-flex items-center gap-1';
+          fkBtn.title = `Inspect & select ${col.foreign_table}`;
+          fkBtn.textContent = `🔗 FK → ${col.foreign_table} ↗`;
+          fkBtn.addEventListener('click', () => inspectForeignTable(col.foreign_table));
+          left.appendChild(fkBtn);
+        }
+        if (isSeq) {
+          const seqBadge = document.createElement('span');
+          seqBadge.className = 'px-2 py-0.5 rounded bg-white/[0.06] text-zinc-400 text-xs';
+          seqBadge.textContent = 'Auto-Seq';
+          left.appendChild(seqBadge);
+        }
+
+        const typeSpan = document.createElement('span');
+        typeSpan.className = 'text-zinc-400 shrink-0';
+        typeSpan.textContent = formatShortSqlType(col.data_type, col.char_max_len);
+
+        row.appendChild(left);
+        row.appendChild(typeSpan);
         body.appendChild(row);
       });
     }
@@ -1712,26 +1988,172 @@
     }
 
     // Table Search / Jump Modal (Ctrl+K)
+    function updateJumpActiveRow(scrollIntoView = false) {
+      const container = document.getElementById('jump-table-list');
+      if (!container) return;
+      const buttons = container.querySelectorAll('button[data-jump-idx]');
+      buttons.forEach((btn, idx) => {
+        const isActive = idx === jumpActiveIndex;
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        btn.className = isActive
+          ? 'w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition flex justify-between items-center gap-2'
+          : 'w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-emerald-500/10 border border-transparent text-zinc-200 transition flex justify-between items-center gap-2';
+        if (isActive && scrollIntoView) {
+          btn.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    }
+
     function renderJumpList(query) {
       const container = document.getElementById('jump-table-list');
       if (!schemaData) return;
       const q = (query || '').toLowerCase().trim();
       container.innerHTML = '';
       const filtered = schemaData.tables.filter(t => t.table_name.toLowerCase().includes(q));
-      filtered.forEach(t => {
+      jumpFilteredTables = filtered;
+
+      if (filtered.length === 0) {
+        jumpActiveIndex = -1;
+        const empty = document.createElement('div');
+        empty.className = 'text-center py-6 text-xs text-zinc-500';
+        empty.textContent = q ? `No tables matching "${query}"` : 'No tables available in schema.';
+        container.appendChild(empty);
+        return;
+      }
+
+      if (jumpActiveIndex < 0 || jumpActiveIndex >= filtered.length) {
+        jumpActiveIndex = 0;
+      }
+
+      filtered.forEach((t, idx) => {
+        const fkCount = (t.columns || []).filter(c => c.is_fk).length;
+        const rowsFormatted = (t.row_count || 0).toLocaleString();
         const item = document.createElement('button');
-        item.className = 'w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-emerald-500/20 hover:text-emerald-300 transition flex justify-between items-center';
-        item.innerHTML = `<span class="font-semibold text-white">${t.table_name}</span><span class="text-xs text-zinc-400">${(t.row_count || 0).toLocaleString()} rows</span>`;
+        item.type = 'button';
+        item.setAttribute('role', 'option');
+        item.setAttribute('data-jump-idx', String(idx));
+        item.innerHTML = `
+          <span class="font-semibold text-white truncate">${escapeHtml(t.table_name)}</span>
+          <span class="flex items-center space-x-2 text-xs shrink-0">
+            <span class="px-2 py-0.5 rounded ${fkCount > 0 ? 'bg-emerald-500/15 text-emerald-300' : 'bg-white/[0.05] text-zinc-500'}">${fkCount} FK</span>
+            <span class="text-zinc-400 min-w-[68px] text-right">${rowsFormatted} rows</span>
+          </span>
+        `;
+        item.addEventListener('mouseenter', () => {
+          jumpActiveIndex = idx;
+          updateJumpActiveRow(false);
+        });
         item.onclick = () => {
           selectTableByName(t.table_name);
           closeModal('modal-jump');
         };
         container.appendChild(item);
       });
-    }
-    function filterJumpTables(val) { renderJumpList(val); }
 
-    // Render Mermaid Diagram & Bind Interactive Node Clicks
+      updateJumpActiveRow(false);
+    }
+
+    function filterJumpTables(val) {
+      jumpActiveIndex = 0;
+      renderJumpList(val);
+    }
+
+    function handleJumpInputKeydown(e) {
+      if (!jumpFilteredTables || jumpFilteredTables.length === 0) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        jumpActiveIndex = (jumpActiveIndex + 1) % jumpFilteredTables.length;
+        updateJumpActiveRow(true);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        jumpActiveIndex = (jumpActiveIndex - 1 + jumpFilteredTables.length) % jumpFilteredTables.length;
+        updateJumpActiveRow(true);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const target = jumpFilteredTables[jumpActiveIndex] || jumpFilteredTables[0];
+        if (target) {
+          selectTableByName(target.table_name);
+          closeModal('modal-jump');
+        }
+      }
+    }
+
+    // Exact ERD Node -> Table Name Resolver (avoids substring collisions like order vs order_items)
+    function resolveErdNodeTableName(g) {
+      if (!g || !schemaData || !schemaData.tables) return null;
+      const tables = schemaData.tables;
+
+      // 1. Exact Mermaid entity label match (most reliable)
+      const labelEl = g.querySelector('text.er.entityLabel, text.entityLabel');
+      if (labelEl) {
+        const label = labelEl.textContent.trim().toLowerCase();
+        const exact = tables.find(t => t.table_name.toLowerCase() === label);
+        if (exact) return exact.table_name;
+      }
+
+      // 2. Exact Mermaid SVG group ID match (`entity-<tableName>-<hash>`), longest name first
+      const gid = (g.id || '').toLowerCase();
+      const sorted = [...tables].sort((a, b) => b.table_name.length - a.table_name.length);
+      for (const t of sorted) {
+        const tn = t.table_name.toLowerCase();
+        if (gid === `entity-${tn}` || gid.startsWith(`entity-${tn}-`)) {
+          return t.table_name;
+        }
+      }
+
+      // 3. Fallback: first <text> element exact equality
+      const firstTextEl = g.querySelector('text');
+      if (firstTextEl) {
+        const firstText = firstTextEl.textContent.trim().toLowerCase();
+        const exactText = tables.find(t => t.table_name.toLowerCase() === firstText);
+        if (exactText) return exactText.table_name;
+      }
+      return null;
+    }
+
+    let erdHintDismissed = false;
+    let erdHintTimer = null;
+
+    function dismissErdHint() {
+      if (erdHintDismissed) return;
+      erdHintDismissed = true;
+      if (erdHintTimer) {
+        clearTimeout(erdHintTimer);
+        erdHintTimer = null;
+      }
+      const hint = document.getElementById('erd-interaction-hint');
+      if (hint) {
+        hint.classList.add('opacity-0');
+        setTimeout(() => hint.classList.add('hidden'), 500);
+      }
+    }
+
+    function updateErdSelectedPill(tableName) {
+      const pill = document.getElementById('erd-selected-pill');
+      const legend = document.getElementById('erd-legend');
+      const nameEl = document.getElementById('erd-selected-name');
+      const metaEl = document.getElementById('erd-selected-meta');
+      if (!pill || !nameEl || !metaEl) return;
+
+      if (!schemaData || !tableName) {
+        pill.classList.add('hidden');
+        if (legend) { legend.classList.add('hidden'); legend.classList.remove('sm:flex'); }
+        return;
+      }
+      const tableMeta = schemaData.tables.find(t => t.table_name === tableName);
+      if (!tableMeta) {
+        pill.classList.add('hidden');
+        if (legend) { legend.classList.add('hidden'); legend.classList.remove('sm:flex'); }
+        return;
+      }
+      const fkCount = (tableMeta.columns || []).filter(c => c.is_fk).length;
+      nameEl.textContent = tableMeta.table_name;
+      metaEl.textContent = `${(tableMeta.row_count || 0).toLocaleString()} rows · ${fkCount} FK`;
+      pill.classList.remove('hidden');
+      if (legend) { legend.classList.remove('hidden'); legend.classList.add('sm:flex'); }
+    }
+
+    // Render Mermaid Diagram & Bind Interactive Node Clicks / Double-Clicks
     async function renderMermaidDiagram(code) {
       const container = document.getElementById('erd-output');
       container.innerHTML = '';
@@ -1739,6 +2161,9 @@
       if (!code || code.trim() === 'erDiagram') return;
 
       try {
+        if (document.fonts && document.fonts.ready) {
+          await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 800))]);
+        }
         const id = 'mermaid-svg-' + Date.now();
         const { svg } = await mermaid.render(id, code);
         container.innerHTML = svg;
@@ -1747,28 +2172,37 @@
         if (svgEl && schemaData) {
           const groups = svgEl.querySelectorAll('g.node, g[id*="entity-"]');
           groups.forEach(g => {
+            const resolvedName = resolveErdNodeTableName(g);
+            if (!resolvedName) return;
+
             g.addEventListener('click', (e) => {
               e.stopPropagation();
-              const txt = g.textContent || '';
-              const matched = schemaData.tables.find(t =>
-                g.id.toLowerCase().includes(t.table_name.toLowerCase()) ||
-                txt.trim().startsWith(t.table_name)
-              );
-              if (matched) {
-                selectTableByName(matched.table_name);
-                showToast(`Selected table: ${matched.table_name}`);
-              }
+              if (erdDidDrag) return;
+              dismissErdHint();
+              selectTableByName(resolvedName);
+              showToast(`Selected table: ${resolvedName}`);
+            });
+
+            g.addEventListener('dblclick', (e) => {
+              e.stopPropagation();
+              dismissErdHint();
+              selectTableByName(resolvedName);
+              openInspectorModal('columns');
             });
           });
         }
         updateMinimap();
         setTimeout(() => fitErdToScreen(), 60);
+        if (!erdHintDismissed && !erdHintTimer) {
+          erdHintTimer = setTimeout(dismissErdHint, 5000);
+        }
       } catch (err) {
         console.error('Mermaid render error:', err);
       }
     }
 
     function highlightErdTable(tableName) {
+      updateErdSelectedPill(tableName);
       const svgEl = document.querySelector('#erd-output svg');
       if (!svgEl || !schemaData || !tableName) return;
 
@@ -1779,12 +2213,16 @@
 
       const entityGroups = svgEl.querySelectorAll('g[id*="entity-"], g.node');
       entityGroups.forEach(g => {
-        g.classList.remove('erd-active-node', 'erd-parent-node');
-        const gid = (g.id || '').toLowerCase();
-        if (gid.includes(tableName.toLowerCase())) {
+        g.classList.remove('erd-active-node', 'erd-parent-node', 'erd-dimmed-node');
+        const nodeTable = resolveErdNodeTableName(g);
+        if (!nodeTable) return;
+        const lowerNode = nodeTable.toLowerCase();
+        if (lowerNode === tableName.toLowerCase()) {
           g.classList.add('erd-active-node');
-        } else if ([...parentNames].some(p => gid.includes(p))) {
+        } else if (parentNames.has(lowerNode)) {
           g.classList.add('erd-parent-node');
+        } else {
+          g.classList.add('erd-dimmed-node');
         }
       });
     }
@@ -1793,15 +2231,16 @@
       minimapEnabled = !minimapEnabled;
       const mm = document.getElementById('erd-minimap');
       const lbl = document.getElementById('menu-minimap-state');
+      const canvasLbl = document.getElementById('canvas-minimap-state');
       if (minimapEnabled) {
         mm.classList.remove('hidden');
-        lbl.textContent = 'On';
-        lbl.className = 'text-xs font-mono text-emerald-400';
+        if (lbl) { lbl.textContent = 'On'; lbl.className = 'text-[11px] font-mono text-emerald-400'; }
+        if (canvasLbl) { canvasLbl.textContent = 'On'; canvasLbl.className = 'font-mono text-emerald-400'; }
         updateMinimap();
       } else {
         mm.classList.add('hidden');
-        lbl.textContent = 'Off';
-        lbl.className = 'text-xs font-mono text-zinc-400';
+        if (lbl) { lbl.textContent = 'Off'; lbl.className = 'text-[11px] font-mono text-zinc-500'; }
+        if (canvasLbl) { canvasLbl.textContent = 'Off'; canvasLbl.className = 'font-mono text-zinc-500'; }
       }
       document.getElementById('main-menu-dropdown').classList.add('hidden');
     }
@@ -1854,12 +2293,28 @@
       spinner.classList.remove('hidden');
       btnText.textContent = `Streaming ${rowCount.toLocaleString()} rows...`;
       progContainer.classList.remove('hidden');
+      progBar.classList.remove('seed-progress-live');
+      progBar.style.width = '0%';
 
       document.getElementById('metric-status').textContent = 'Streaming';
-      document.getElementById('metric-status').className = 'text-sm font-semibold text-amber-400 mt-0.5';
+      document.getElementById('metric-status').className = 'text-xs font-semibold text-amber-400';
+      syncConsoleSummary();
+
+      let liveTimerId = null;
+      const liveStart = performance.now();
 
       try {
         const totalBatches = Math.ceil(rowCount / selectedBatchSize);
+
+        if (appMode !== 'demo') {
+          progBar.classList.add('seed-progress-live');
+          progLabel.textContent = `Streaming ${totalBatches} batch${totalBatches === 1 ? '' : 'es'} to PostgreSQL...`;
+          progPct.textContent = '0.0s';
+          liveTimerId = setInterval(() => {
+            const elapsed = ((performance.now() - liveStart) / 1000).toFixed(1);
+            progPct.textContent = `${elapsed}s`;
+          }, 100);
+        }
 
         // Auto-seed empty ancestor parent tables in topological order if enabled
         const tableMeta = schemaData.tables.find(t => t.table_name === tableName);
@@ -1871,6 +2326,7 @@
               parentMeta.row_count = 50;
               logTelemetry('INFO', `Auto-seeded 50 parent rows into '${parentMeta.table_name}'.`);
             } else {
+              progLabel.textContent = `Auto-seeding parent '${parentMeta.table_name}' (50 rows)...`;
               const pRes = await fetch('/api/seed', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1896,9 +2352,10 @@
           if (tableMeta) tableMeta.row_count = (tableMeta.row_count || 0) + rowCount;
 
           document.getElementById('metric-status').textContent = 'Committed';
-          document.getElementById('metric-status').className = 'text-sm font-semibold text-emerald-400 mt-0.5';
+          document.getElementById('metric-status').className = 'text-xs font-semibold text-emerald-400';
           document.getElementById('metric-rows').textContent = `+${rowCount.toLocaleString()}`;
           document.getElementById('metric-latency').textContent = `${simLatency} ms`;
+          syncConsoleSummary();
 
           recordRunHistory(tableName, rowCount, simLatency, 'SUCCESS');
           logTelemetry('SUCCESS', `Injected ${rowCount.toLocaleString()} rows into ${tableName} in ${simLatency} ms.`);
@@ -1908,9 +2365,7 @@
           return;
         }
 
-        progBar.style.width = '50%';
-        progLabel.textContent = `Executing ${totalBatches} batches...`;
-        progPct.textContent = '50%';
+        progLabel.textContent = `Executing ${totalBatches} batch${totalBatches === 1 ? '' : 'es'}...`;
 
         const res = await fetch('/api/seed', {
           method: 'POST',
@@ -1920,13 +2375,21 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || 'Batch execution failed');
 
+        if (liveTimerId) {
+          clearInterval(liveTimerId);
+          liveTimerId = null;
+        }
+        const totalElapsed = ((performance.now() - liveStart) / 1000).toFixed(1);
+        progBar.classList.remove('seed-progress-live');
         progBar.style.width = '100%';
-        progPct.textContent = '100%';
+        progLabel.textContent = 'Committed to PostgreSQL';
+        progPct.textContent = `100% · ${totalElapsed}s`;
 
         document.getElementById('metric-status').textContent = 'Committed';
-        document.getElementById('metric-status').className = 'text-sm font-semibold text-emerald-400 mt-0.5';
+        document.getElementById('metric-status').className = 'text-xs font-semibold text-emerald-400';
         document.getElementById('metric-rows').textContent = `+${data.rows_inserted.toLocaleString()}`;
         document.getElementById('metric-latency').textContent = `${data.execution_time_ms} ms`;
+        syncConsoleSummary();
 
         recordRunHistory(data.table, data.rows_inserted, data.execution_time_ms, 'SUCCESS');
         logTelemetry('SUCCESS', `Committed ${data.rows_inserted.toLocaleString()} rows into ${data.table} (${data.execution_time_ms} ms).`);
@@ -1934,16 +2397,31 @@
         showToast(`Injected ${data.rows_inserted.toLocaleString()} rows into ${data.table}`);
         await fetchSchema();
       } catch (err) {
+        if (liveTimerId) {
+          clearInterval(liveTimerId);
+          liveTimerId = null;
+        }
+        progBar.classList.remove('seed-progress-live');
+        progLabel.textContent = 'Transaction rolled back';
+        progPct.textContent = 'Error';
         document.getElementById('metric-status').textContent = 'Rolled Back';
-        document.getElementById('metric-status').className = 'text-sm font-semibold text-rose-400 mt-0.5';
+        document.getElementById('metric-status').className = 'text-xs font-semibold text-rose-400';
+        syncConsoleSummary();
         recordRunHistory(tableName, rowCount, 0, 'ERROR');
         logTelemetry('ERROR', `Transaction rolled back on '${tableName}'`, err.message);
         showToast(err.message.slice(0, 60), 'error');
       } finally {
+        if (liveTimerId) {
+          clearInterval(liveTimerId);
+          liveTimerId = null;
+        }
         btn.disabled = false;
         spinner.classList.add('hidden');
         updateInjectButtonLabel();
-        setTimeout(() => progContainer.classList.add('hidden'), 700);
+        setTimeout(() => {
+          progContainer.classList.add('hidden');
+          progBar.classList.remove('seed-progress-live');
+        }, 700);
       }
     }
 
@@ -1993,18 +2471,57 @@
         .replace(/'/g, '&#39;');
     }
 
+    let consoleCollapsed = false;
+
+    function syncConsoleSummary() {
+      const status = document.getElementById('metric-status')?.textContent || 'Idle';
+      const rows = document.getElementById('metric-rows')?.textContent || '0 rows';
+      const latency = document.getElementById('metric-latency')?.textContent || '0 ms';
+      const summaryEl = document.getElementById('console-collapsed-summary');
+      if (summaryEl) summaryEl.textContent = `${status} · ${rows} · ${latency}`;
+    }
+
+    function toggleTelemetryConsole() {
+      consoleCollapsed = !consoleCollapsed;
+      const card = document.getElementById('telemetry-card');
+      const body = document.getElementById('telemetry-body');
+      const summary = document.getElementById('console-collapsed-summary');
+      const seg = document.getElementById('console-filter-segment');
+      const chevron = document.getElementById('console-chevron');
+      const btn = document.getElementById('btn-toggle-console');
+
+      if (consoleCollapsed) {
+        syncConsoleSummary();
+        body.classList.add('hidden');
+        summary.classList.remove('hidden');
+        if (seg) seg.classList.add('hidden');
+        card.classList.remove('flex-1');
+        card.classList.add('shrink-0');
+        chevron.style.transform = 'rotate(180deg)';
+        btn.title = 'Expand console';
+      } else {
+        body.classList.remove('hidden');
+        summary.classList.add('hidden');
+        if (seg) seg.classList.remove('hidden');
+        card.classList.add('flex-1');
+        card.classList.remove('shrink-0');
+        chevron.style.transform = 'rotate(0deg)';
+        btn.title = 'Collapse console';
+      }
+    }
+
     // Telemetry Console Logging & Filtering
     function logTelemetry(type, msg, details = null) {
       const container = document.getElementById('telemetry-logs');
       const time = new Date().toLocaleTimeString();
       const div = document.createElement('div');
       div.setAttribute('data-log-type', type);
+      div.className = 'px-2.5 py-2 rounded-lg bg-black/30 border border-white/[0.04] leading-relaxed break-words';
       if (currentLogFilter === 'ERROR' && type !== 'ERROR') {
         div.classList.add('hidden');
       } else if (currentLogFilter === 'METRICS' && type !== 'SUCCESS' && type !== 'METRICS') {
         div.classList.add('hidden');
       }
-      div.className = 'p-2.5 rounded-xl bg-black/30 border border-white/[0.04] leading-relaxed break-words';
       const color = (type === 'SUCCESS' || type === 'METRICS')
         ? 'text-emerald-400'
         : type === 'ERROR'
@@ -2012,33 +2529,34 @@
           : 'text-amber-400';
 
       const safeMsg = escapeHtml(msg);
-      let html = `<div class="flex items-center justify-between gap-2"><div><span class="text-zinc-500">[${time}]</span> <span class="${color} font-bold">${escapeHtml(type)}</span> <span class="text-zinc-200">${safeMsg}</span></div>`;
+      let html = `<div class="flex items-center justify-between gap-2"><div><span class="text-zinc-500">[${time}]</span> <span class="${color} font-semibold">${escapeHtml(type)}</span> <span class="text-zinc-300">${safeMsg}</span></div>`;
       if (details) {
         const safeClip = String(details).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-        html += `<button onclick="navigator.clipboard.writeText('${safeClip}'); showToast('Copied error detail');" class="text-xs px-2 py-0.5 rounded bg-white/[0.06] hover:bg-white/10 text-zinc-300 shrink-0">Copy</button>`;
+        html += `<button onclick="navigator.clipboard.writeText('${safeClip}'); showToast('Copied error detail');" class="text-[11px] px-2 py-0.5 rounded bg-white/[0.06] hover:bg-white/10 text-zinc-300 shrink-0">Copy</button>`;
       }
       html += `</div>`;
       if (details) {
-        html += `<div class="text-xs text-rose-300/90 mt-1.5 pl-3 border-l-2 border-rose-500/40">${escapeHtml(details)}</div>`;
+        html += `<div class="text-xs text-rose-300/90 mt-1 pl-2.5 border-l-2 border-rose-500/40">${escapeHtml(details)}</div>`;
       }
       div.innerHTML = html;
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
+      syncConsoleSummary();
     }
 
     function setLogFilter(filter) {
       currentLogFilter = filter;
       document.getElementById('flt-all').className = filter === 'ALL'
-        ? 'px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-semibold'
-        : 'px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400';
+        ? 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-medium'
+        : 'px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200';
       document.getElementById('flt-error').className = filter === 'ERROR'
-        ? 'px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 font-semibold'
-        : 'px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400';
+        ? 'px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-medium'
+        : 'px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200';
       const fltMetrics = document.getElementById('flt-metrics');
       if (fltMetrics) {
         fltMetrics.className = filter === 'METRICS'
-          ? 'px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-semibold'
-          : 'px-2.5 py-1 rounded-lg hover:bg-white/[0.06] text-zinc-400';
+          ? 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-medium'
+          : 'px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200';
       }
 
       document.querySelectorAll('#telemetry-logs > div[data-log-type]').forEach(el => {
@@ -2050,7 +2568,7 @@
     }
 
     function clearLogs() {
-      document.getElementById('telemetry-logs').innerHTML = '<div class="text-zinc-400">[SYSTEM] Console logs cleared.</div>';
+      document.getElementById('telemetry-logs').innerHTML = '<div class="text-zinc-500">[SYSTEM] Console logs cleared.</div>';
     }
 
     // Connection Config (.env)
@@ -2122,7 +2640,11 @@
       document.getElementById('main-menu-dropdown').classList.add('hidden');
       const svgEl = document.querySelector('#erd-output svg');
       if (!svgEl) return;
-      const data = new XMLSerializer().serializeToString(svgEl);
+      const clone = svgEl.cloneNode(true);
+      clone.querySelectorAll('.erd-active-node, .erd-parent-node, .erd-dimmed-node').forEach(el => {
+        el.classList.remove('erd-active-node', 'erd-parent-node', 'erd-dimmed-node');
+      });
+      const data = new XMLSerializer().serializeToString(clone);
       const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -2168,15 +2690,23 @@
     }
 
     const viewport = document.getElementById('erd-viewport');
+    let dragOriginX = 0, dragOriginY = 0;
     viewport.addEventListener('mousedown', (e) => {
-      if (e.target.closest('button')) return;
+      if (e.target.closest('button, .erd-overlay-ui')) return;
       isDragging = true;
+      erdDidDrag = false;
+      dragOriginX = e.clientX;
+      dragOriginY = e.clientY;
       startX = e.clientX - translateX;
       startY = e.clientY - translateY;
       document.getElementById('erd-wrapper').classList.add('dragging');
     });
     window.addEventListener('mousemove', (e) => {
       if (!isDragging) return;
+      if (Math.abs(e.clientX - dragOriginX) > 4 || Math.abs(e.clientY - dragOriginY) > 4) {
+        erdDidDrag = true;
+        dismissErdHint();
+      }
       translateX = e.clientX - startX;
       translateY = e.clientY - startY;
       applyTransform();
@@ -2184,9 +2714,11 @@
     window.addEventListener('mouseup', () => {
       isDragging = false;
       document.getElementById('erd-wrapper').classList.remove('dragging');
+      setTimeout(() => { erdDidDrag = false; }, 0);
     });
     viewport.addEventListener('wheel', (e) => {
       e.preventDefault();
+      dismissErdHint();
       zoomErd(e.deltaY < 0 ? 0.12 : -0.12);
     }, { passive: false });
 
@@ -2199,13 +2731,13 @@
       }
       if (e.key === 'Escape') {
         document.querySelectorAll('.fixed[id^="modal-"]').forEach(m => m.classList.add('hidden'));
-        document.getElementById('conn-dropdown').classList.add('hidden');
-        document.getElementById('main-menu-dropdown').classList.add('hidden');
-        document.getElementById('custom-table-menu').classList.add('hidden');
+        closeAllPopovers();
         return;
       }
       const tag = (e.target.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+      if (tag === 'input' || tag === 'select' || tag === 'textarea' || e.target.isContentEditable) return;
+      if (isAnyModalOpen()) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
 
       const k = e.key.toLowerCase();
       if (k === 'r') { e.preventDefault(); fetchSchema(); }
@@ -2220,6 +2752,7 @@
 
     // Startup Initialization
     window.addEventListener('DOMContentLoaded', async () => {
+      updateRowPresetHighlight(document.getElementById('input-rows').value);
       await checkHealth();
       await fetchSchema();
       setInterval(() => {
