@@ -24,16 +24,7 @@
 
 <div align="center">
 
-```ansi
-[1;32m  ____ _____ ____  _   _  ____ _____ _   _ ____     _    [0m
-[1;32m / ___|_   _|  _ \| | | |/ ___|_   _| | | |  _ \   / \   [0m
-[1;32m \___ \ | | | |_) | | | | |     | | | | | | |_) | / _ \  [0m
-[1;32m  ___) || | |  _ <| |_| | |___  | | | |_| |  _ < / ___ \ [0m
-[1;32m |____/ |_| |_| \_\\___/ \____| |_|  \___/|_| \_/_/   \_\[0m
-
-  [1;37mPostgreSQL Architecture Mapping & High-Velocity Seeder[0m
-  [30;42;1m [ LIVE CONNECTED ] [0m [1;32mpostgres@127.0.0.1:5432/postgres[0m
-```
+<img src="frontend/assets/tui-banner.svg" alt="Structura Forge Terminal Banner" width="760" />
 
 </div>
 
@@ -191,7 +182,8 @@ structura-forge/
 └── frontend/
     ├── index.html              # Web Studio interface
     └── assets/
-        └── structura-icon.png  # Application icon
+        ├── structura-icon.png  # Application icon
+        └── tui-banner.svg      # Terminal banner asset
 ```
 
 ---
