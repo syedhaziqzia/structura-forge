@@ -4,9 +4,7 @@
 
   # Structura Forge
 
-  **PostgreSQL Schema Visualizer & Relational Synthetic Data Engine**
-
-  *Inspect live schemas, generate relational entity diagrams, and stream high-volume mock data with strict referential integrity.*
+  **See your PostgreSQL database as a diagram, and fill it with realistic test data in seconds.**
 
   <br />
 
@@ -30,56 +28,56 @@
 
 ---
 
-## Overview
+## What Is It?
 
-Working with PostgreSQL usually brings two recurring problems:
+Structura Forge is a free tool that runs on your own computer and helps with two common database chores:
 
-1. **Understanding the schema:** tracing primary keys, foreign keys, and multi-level relationships across many tables.
-2. **Populating test data:** generating thousands of realistic rows without hitting foreign key violations, duplicate keys, or empty parent tables.
+1. **Understanding your tables.** It draws a diagram of your PostgreSQL tables and shows how they connect to each other.
+2. **Creating test data.** It fills your tables with realistic fake rows (names, emails, prices, dates, and more) without breaking any links between tables.
 
-**Structura Forge** solves both in one local tool, offered through two interfaces that share the same database connection:
+You can use it in two ways:
 
-- **Terminal Console (TUI):** a fast, keyboard-driven Rich interface for your shell.
-- **Web Studio:** a browser-based interactive ERD canvas and seeding dashboard at `http://localhost:8000`.
+- **Terminal app (TUI):** a menu that runs in your command line.
+- **Web Studio:** a visual dashboard you open in your browser at `http://localhost:8000`.
 
-Everything runs on your own machine. No telemetry, no cloud services, no outbound requests.
+Everything stays on your computer. Nothing is sent to the internet.
 
 ---
 
-## Key Features
+## Features
 
-- **Live Schema Introspection:** Reads tables, columns, primary keys, foreign keys, unique constraints, and row counts from the `public` schema.
-- **Interactive ERD Canvas:** Pan, zoom, fit-to-screen, minimap, and SVG export. Selecting a table highlights it in emerald and its parent FK tables in amber.
-- **Constraint-Safe Seeding:** Inserts **1 to 50,000** realistic rows per run using `Faker` and `psycopg2.extras.execute_batch`, sampling valid parent keys for every foreign key.
-- **Automatic Parent Seeding:** If a target table depends on empty parent tables, Structura Forge can seed them first in topological order.
-- **Unique & Serial Aware:** Skips `SERIAL` / `IDENTITY` / `nextval()` columns and generates collision-free values for `UNIQUE` columns.
-- **Transactional Safety:** Every run is wrapped in a transaction and rolled back on failure, so no partial inserts are left behind.
-- **Mermaid ERD Export:** Generates Mermaid `erDiagram` code to `erd_blueprint.md`, viewable on GitHub or in VS Code.
-- **Preview Sandbox Mode:** A built-in 6-table schema lets you explore every feature without a running database.
+- **Table diagram:** See all your tables and the links between them. Zoom, drag around, fit to screen, and save the diagram as an image (SVG).
+- **Realistic test data:** Add anywhere from **1 to 50,000** rows to a table in one go.
+- **No broken links:** When a table points to another table (a foreign key), Structura Forge only uses values that really exist in that other table.
+- **Fills empty parent tables for you:** If a table depends on another table that is still empty, it can fill that one first.
+- **Avoids duplicates:** Columns that must be unique always get unique values. Auto-numbered ID columns are left for PostgreSQL to fill in.
+- **All-or-nothing saves:** If anything goes wrong while adding rows, nothing is saved, so your data is never left half-done.
+- **Diagram export:** Saves your diagram as Mermaid code in `erd_blueprint.md`, which GitHub and VS Code can display.
+- **Try it without a database:** Preview Sandbox mode comes with 6 sample tables so you can explore every feature right away.
 
 ---
 
 ## Screenshots
 
 ### Web Studio
-| Interactive ERD & Parent-FK Highlighting | Batch Seeding & Committed Telemetry |
+| Table Diagram with Highlighted Links | Adding Test Rows |
 | :---: | :---: |
-| <img src="frontend/assets/screenshots/web-studio-erd.png" alt="Web Studio ERD and Parent FK Highlighting" width="100%" /> | <img src="frontend/assets/screenshots/web-studio-seeder.png" alt="Web Studio Batch Seeding Telemetry" width="100%" /> |
+| <img src="frontend/assets/screenshots/web-studio-erd.png" alt="Web Studio table diagram" width="100%" /> | <img src="frontend/assets/screenshots/web-studio-seeder.png" alt="Web Studio adding rows" width="100%" /> |
 
-### Terminal Console (TUI)
-| Control Deck & Live Connection | Schema Tree & High-Velocity Seeder |
+### Terminal App (TUI)
+| Main Menu | Table Tree & Adding Rows |
 | :---: | :---: |
-| <img src="frontend/assets/screenshots/tui-control-deck.png" alt="TUI Control Deck" width="100%" /> | <img src="frontend/assets/screenshots/tui-tree-seeder.png" alt="TUI Schema Tree and Seeder" width="100%" /> |
+| <img src="frontend/assets/screenshots/tui-control-deck.png" alt="TUI main menu" width="100%" /> | <img src="frontend/assets/screenshots/tui-tree-seeder.png" alt="TUI table tree and seeding" width="100%" /> |
 
 ---
 
-## Quickstart
+## Getting Started
 
-### Prerequisites
-- Python 3.11+
-- PostgreSQL 14+ running locally (optional: Preview Sandbox works without it)
+### What You Need
+- **Python 3.11** or newer
+- **PostgreSQL 14** or newer, running on your computer (optional: you can try everything in Preview Sandbox mode without it)
 
-### 1. Install
+### Step 1: Download and Install
 
 ```bash
 git clone https://github.com/syedhaziqzia/structura-forge.git
@@ -95,7 +93,9 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Configure Your Connection
+### Step 2: Add Your Database Password
+
+Make your own settings file by copying the example:
 
 ```bash
 # Windows (PowerShell)
@@ -104,7 +104,7 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-Open `.env` and replace `CHANGE_ME` with your local PostgreSQL password:
+Open the new `.env` file and replace `CHANGE_ME` with your PostgreSQL password:
 
 ```env
 DATABASE_URL=postgresql://postgres:CHANGE_ME@localhost:5432/postgres
@@ -113,157 +113,173 @@ HOST=127.0.0.1
 ```
 
 > [!TIP]
-> You can also set credentials without editing files: use TUI option **`6`**, or click the connection pill in the Web Studio and choose **Configure Connection (.env)**. Both save to your local `.env` only.
+> Don't want to edit files? Choose option **`6`** in the terminal app, or click the connection button (top-right) in the Web Studio and choose **Configure Connection**. Either way, your password is saved only in your own `.env` file.
 
-### 3. Run
+### Step 3: Start It
 
 ```bash
-python structura.py          # Terminal Console (TUI)
-python structura.py --web    # Web Studio at http://localhost:8000
+python structura.py          # Open the terminal app
+python structura.py --web    # Open the Web Studio at http://localhost:8000
 ```
 
 ---
 
-## Database Setup & Test Schema
+## Sample Tables for Testing
 
-You can point Structura Forge at any existing local PostgreSQL database, or use the bundled reference schema in [`backend/test_schema.sql`](backend/test_schema.sql):
+Don't have a database ready? This project includes 6 sample shop tables in [`backend/test_schema.sql`](backend/test_schema.sql):
 
-- **`users`** &rarr; **`orders`** &rarr; **`order_items`** &larr; **`products`** &larr; **`categories`** (self-referencing parent category)
-- **`audit_logs`** with `jsonb` payloads referencing `users`
+- **`users`**, **`orders`**, **`order_items`**, **`products`**, **`categories`** (categories can have sub-categories)
+- **`audit_logs`**, which stores JSON data linked to users
 
-**Load it using any one of these:**
+**Add them to your database in one of these ways:**
 
-| Method | How |
+| Where | How |
 | :--- | :--- |
-| **TUI** | Run `python structura.py` &rarr; option **`6`** &rarr; provision test schema |
-| **Web Studio** | **☰ Menu** &rarr; **Provision 6 Lab Tables** |
-| **psql** | `psql -U postgres -d postgres -f backend/test_schema.sql` |
+| **Terminal app** | Run `python structura.py`, then choose option **`6`** |
+| **Web Studio** | Open the **☰ menu** and click **Provision 6 Lab Tables** |
+| **Command line** | `psql -U postgres -d postgres -f backend/test_schema.sql` |
 
-All statements use `CREATE TABLE IF NOT EXISTS`, so running them again is safe.
+Running this again is safe. Tables that already exist are skipped.
 
-**Live vs. Preview:** If the database is unreachable, both interfaces fall back to **Preview Sandbox Mode** with simulated data. You can always tell which mode you are in:
+### Am I Connected to My Real Database?
 
-| | Live PostgreSQL | Preview Sandbox |
+If Structura Forge can't reach your database, it switches to **Preview Sandbox** mode, where the data is pretend and nothing is saved. Here's how to tell which mode you're in:
+
+| | Real database (Live) | Pretend data (Preview) |
 | :--- | :--- | :--- |
-| **Web Studio** | Green `Live` pill, real tables, Console shows `Committed` | Amber `Preview` pill + banner, Console marked `Simulated` |
-| **TUI** | `[ LIVE CONNECTED ]` | `[ DB UNREACHABLE ]` |
+| **Web Studio** | Green **`Live`** label, your real tables are shown | Amber **`Preview`** label and banner, Console marked **`Simulated`** |
+| **Terminal app** | **`[ LIVE CONNECTED ]`** | **`[ DB UNREACHABLE ]`** |
 
 ---
 
-## Using the Web Studio
+## Using Multiple Databases
 
-Click **`? Help`** in the top-right corner at any time for an in-app quick guide.
-
-**Basic workflow:**
-1. **Pick a table:** click a node on the diagram, or use the **Target table** selector.
-2. **Inspect (optional):** click **Inspect** to view columns and constraints, a 3-row Faker preview, and the parent dependency order.
-3. **Choose a row count:** type any number from **1 to 50,000**, drag the slider, or use the 500 / 1,000 / 10,000 / 50,000 presets.
-4. **Inject:** click **Inject N Rows**. Runs over 25,000 rows ask for confirmation first.
-
-**Controls at a glance:**
-
-| Control | What it does |
+| Question | Answer |
 | :--- | :--- |
-| **Connection pill** (top-right) | Switch between Live PostgreSQL and Preview Sandbox, or open **Configure Connection** |
-| **↻ Refresh** | Re-read the schema from the database |
-| **☰ Menu** | Jump to table, view or copy Mermaid code, export SVG, toggle minimap, provision test tables, quick-start guide |
-| **⚙ Engine Settings** | Set the **batch size** (500 – 5,000 rows per `execute_batch` page) and toggle **Auto-seed empty parents** |
-| **Console** | Live status, rows inserted, latency, log filters (`All` / `Errors` / `Metrics`), and re-runnable **Run History** |
+| **Which database types work?** | **PostgreSQL only.** MySQL, SQLite, SQL Server, and others are not supported. |
+| **Can I use different PostgreSQL databases?** | **Yes, one at a time.** Change the **Database Name** in the Web Studio's connection form (or use option **`6`** in the terminal app) to switch, for example from `postgres` to `school_db`. |
+| **Can I connect to several at once?** | **No.** Only one database is connected at a time. Saving a new connection replaces the old one in `.env`. |
+| **Which tables are shown?** | Only tables in the **`public`** schema (the default place PostgreSQL puts tables). |
 
 > [!NOTE]
-> **Row count vs. batch size:** the row count is the *total* number of rows to insert. The batch size only controls how many rows are sent to PostgreSQL per round-trip. For example, 55 rows with a batch size of 50 runs as one batch of 50 plus one of 5.
+> The terminal app reads `.env` fresh every time you pick an option. The Web Studio keeps the connection it started with. So if you switch databases in the terminal app, restart the Web Studio (or switch it using its own connection form).
+
+---
+
+## How to Use the Web Studio
+
+Click the **`? Help`** button in the top-right corner any time to see a quick guide inside the app.
+
+**Adding test rows in 4 steps:**
+1. **Pick a table:** click it in the diagram, or choose it from the **Target table** list.
+2. **Take a look (optional):** click **Inspect** to see the table's columns, 3 example rows, and which tables it depends on.
+3. **Choose how many rows:** type any number from **1 to 50,000**, drag the slider, or click a preset (500, 1,000, 10,000, 50,000).
+4. **Add them:** click **Inject N Rows**. For more than 25,000 rows, you'll be asked to confirm first.
+
+**What the buttons do:**
+
+| Button | What it does |
+| :--- | :--- |
+| **Connection button** (top-right) | Switch between your real database and Preview Sandbox, or change your connection details |
+| **↻** | Reload your tables from the database |
+| **☰ Menu** | Jump to a table, view or copy the diagram code, save the diagram as an image, show a mini-map, add the 6 sample tables |
+| **⚙ Settings** | Choose the **batch size** and turn **auto-fill empty parent tables** on or off |
+| **Console** | Shows whether the last run worked, how many rows were added, and how long it took. Also keeps a history you can re-run |
+
+> [!NOTE]
+> **Rows vs. batch size:** "Rows" is the total number of rows you want to add. "Batch size" is just how many rows are sent to the database at a time. For example, 55 rows with a batch size of 50 is sent as 50 rows, then 5 rows. You still get 55 rows.
 
 **Keyboard shortcuts:**
 
-| Key | Action |
+| Key | What it does |
 | :--- | :--- |
-| <kbd>?</kbd> | Open the quick guide & shortcuts |
-| <kbd>Ctrl</kbd> + <kbd>K</kbd> | Search and jump to a table |
-| <kbd>R</kbd> | Refresh schema |
-| <kbd>Enter</kbd> | Inject rows into the selected table |
-| <kbd>F</kbd> | Fit diagram to screen |
-| <kbd>+</kbd> / <kbd>−</kbd> / <kbd>0</kbd> | Zoom in / zoom out / reset to 100% |
-| <kbd>G</kbd> | View Mermaid ERD code |
-| <kbd>Esc</kbd> | Close any modal |
+| <kbd>?</kbd> | Open the help guide |
+| <kbd>Ctrl</kbd> + <kbd>K</kbd> | Search for a table |
+| <kbd>R</kbd> | Reload tables |
+| <kbd>Enter</kbd> | Add rows to the selected table |
+| <kbd>F</kbd> | Fit the diagram to the screen |
+| <kbd>+</kbd> / <kbd>−</kbd> / <kbd>0</kbd> | Zoom in / zoom out / reset zoom |
+| <kbd>G</kbd> | Show the diagram code |
+| <kbd>Esc</kbd> | Close a popup |
 
 ---
 
-## Using the TUI
+## How to Use the Terminal App
 
 ```bash
 python structura.py
 ```
 
-| Key | Action |
+| Key | What it does |
 | :---: | :--- |
-| `1` | View the schema as a color-coded tree (PKs in gold, FKs in emerald) |
-| `2` | Export a Mermaid ERD to `erd_blueprint.md` |
-| `3` | Seed a table: pick a table, enter the row count and batch size, and watch the progress bar |
-| `4` | Launch the Web Studio and open it in your browser |
-| `5` | Exit (or type `q`) |
-| `6` | Configure connection credentials or provision the test schema |
+| `1` | Show your tables as a tree (primary keys in gold, links in green) |
+| `2` | Save the table diagram to `erd_blueprint.md` |
+| `3` | Add test rows: pick a table, type how many rows and the batch size, then watch the progress bar |
+| `4` | Open the Web Studio in your browser |
+| `5` | Quit (or type `q`) |
+| `6` | Change your connection details or add the 6 sample tables |
 
-At any prompt, type `b` to cancel and return to the Control Deck.
-
----
-
-## Running the TUI and Web Studio Together
-
-Both can run at the same time against the same database:
-
-1. **Terminal 1:** `python structura.py --web`
-2. **Terminal 2:** `python structura.py`
-
-Rows seeded from one interface show up in the other after a refresh (<kbd>R</kbd> in the Web Studio, or option `1` in the TUI). If the Web Studio is already running, TUI option `4` detects it on port 8000 and simply opens your browser instead of starting a second server.
+Type `b` at any question to go back to the main menu.
 
 ---
 
-## Troubleshooting
+## Running Both at the Same Time
 
-| Problem | Fix |
+You can use the terminal app and the Web Studio together:
+
+1. In **one** terminal window, run: `python structura.py --web`
+2. In **another** terminal window, run: `python structura.py`
+
+Rows added in one show up in the other after you reload (press <kbd>R</kbd> in the Web Studio, or option `1` in the terminal app). If the Web Studio is already running, option `4` in the terminal app just opens your browser instead of starting it again.
+
+---
+
+## Common Problems
+
+| Problem | What to do |
 | :--- | :--- |
-| Stuck in **Preview** / `DB UNREACHABLE` | Check PostgreSQL is running and the password in `.env` is correct, then click **Retry Live** or press <kbd>R</kbd> |
-| `password authentication failed` | Update credentials via TUI option `6` or **Configure Connection** in the Web Studio |
-| Port 8000 already in use | Another instance is running. Open `http://localhost:8000`, or stop the other process |
-| "Blocked: Parent table is empty" | Enable **Auto-seed empty parents** in ⚙ Engine Settings, or seed the parent table first |
-| No tables shown | Your `public` schema is empty. Provision the 6 test tables (see [Database Setup](#database-setup--test-schema)) |
+| Stuck in **Preview** or **`DB UNREACHABLE`** | Make sure PostgreSQL is running and the password in `.env` is right. Then click **Retry Live** or press <kbd>R</kbd> |
+| **"password authentication failed"** | Your password is wrong. Fix it with option `6` in the terminal app or **Configure Connection** in the Web Studio |
+| **Port 8000 is already in use** | The Web Studio is probably already running. Just open `http://localhost:8000` |
+| **"Blocked: Parent table is empty"** | Turn on **auto-fill empty parent tables** in ⚙ Settings, or add rows to the parent table first |
+| **No tables are showing** | Your database has no tables yet. Add the [6 sample tables](#sample-tables-for-testing) |
 
 ---
 
-## Project Structure
+## Project Files
 
 ```text
 structura-forge/
-├── structura.py                # Terminal interface (TUI) & CLI entrypoint
-├── requirements.txt            # Python dependencies
-├── erd_blueprint.md            # Exported Mermaid entity diagram
-├── .env.example                # Connection template (copy to .env)
+├── structura.py                # Terminal app (start here)
+├── requirements.txt            # Python packages to install
+├── erd_blueprint.md            # Saved table diagram
+├── .env.example                # Example settings (copy to .env)
 ├── LICENSE                     # MIT License
 ├── backend/
-│   ├── main.py                 # FastAPI API & data generation engine
-│   └── test_schema.sql         # 6-table reference schema
+│   ├── main.py                 # Web server and test-data engine
+│   └── test_schema.sql         # 6 sample tables
 └── frontend/
-    ├── index.html              # Web Studio (single-page app)
+    ├── index.html              # Web Studio page
     └── assets/
-        ├── structura-icon.png  # Application icon
-        ├── tui-banner.svg      # Terminal banner
-        └── screenshots/        # README screenshots
+        ├── structura-icon.png  # App icon
+        ├── tui-banner.svg      # Terminal banner image
+        └── screenshots/        # Screenshots used in this README
 ```
 
 ---
 
-## Security
+## Privacy & Security
 
-- **Local only:** The server binds to `127.0.0.1`, so it is reachable only from your own computer. CORS is restricted to `localhost:8000` / `127.0.0.1:8000`.
-- **Credentials stay on your machine:** Passwords are stored only in your local `.env`, which is excluded from version control. They are never returned by the API or shown in the TUI or Web Studio.
-- **SQL injection protection:** Table and column names are validated and quoted with `psycopg2.sql.Identifier`; values are passed as parameters.
-- **Zero telemetry:** No analytics, tracking, or external network calls.
+- **Only on your computer:** The Web Studio runs at `127.0.0.1`, which only your own computer can open. Other people can't reach it.
+- **Your password stays private:** It's saved only in your local `.env` file, which is never uploaded to GitHub. The app never shows it on screen.
+- **Safe database queries:** Table and column names are checked before use, which protects against SQL injection.
+- **No tracking:** No analytics, no data collection, no internet connection needed.
 
 > [!WARNING]
-> The Web Studio has no login screen by design. Run it on `127.0.0.1` for local development only, and do not expose port 8000 to a network or the internet.
+> The Web Studio has no login screen. Keep it on your own computer (`127.0.0.1`). Don't put it on a public server or open port 8000 to the internet.
 
 ---
 
 ## License
 
-Distributed under the [MIT License](LICENSE).
+Free to use under the [MIT License](LICENSE).
