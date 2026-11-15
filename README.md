@@ -54,7 +54,21 @@ Designed for visual inspection and interactive operations:
 - Launch via `python structura.py --web` (or `uvicorn backend.main:app --port 8000`).
 - Canvas with pan, zoom (<kbd>+</kbd> / <kbd>−</kbd>), auto-fit (<kbd>F</kbd>), and instant SVG export.
 - Quick table lookup with fuzzy search (<kbd>Ctrl</kbd> + <kbd>K</kbd>).
-- Seeding drawer to preview generated sample rows and inject 100 to 50,000 rows with single-click execution.
+- Seeding drawer to preview generated sample rows and inject 1 to 50,000 rows with single-click execution.
+
+---
+
+## Screenshots
+
+### Web Studio (`http://localhost:8000`)
+| Interactive ERD & Parent-FK Highlighting | Batch Seeding & Committed Telemetry |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/web-studio-erd.png" alt="Web Studio ERD and Parent FK Highlighting" width="100%" /> | <img src="frontend/assets/screenshots/web-studio-seeder.png" alt="Web Studio Batch Seeding Telemetry" width="100%" /> |
+
+### Terminal Console (TUI)
+| Control Deck & Live Connection | Schema Tree & High-Velocity Seeder |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/tui-control-deck.png" alt="TUI Control Deck" width="100%" /> | <img src="frontend/assets/screenshots/tui-tree-seeder.png" alt="TUI Schema Tree and Seeder" width="100%" /> |
 
 ---
 
@@ -182,7 +196,8 @@ structura-forge/
     ├── index.html              # Web Studio interface
     └── assets/
         ├── structura-icon.png  # Application icon
-        └── tui-banner.svg      # Terminal banner asset
+        ├── tui-banner.svg      # Terminal banner asset
+        └── screenshots/        # Web Studio & TUI screenshots
 ```
 
 ---

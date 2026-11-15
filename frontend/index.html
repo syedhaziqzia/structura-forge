@@ -437,6 +437,12 @@
         </svg>
       </button>
 
+      <!-- Visible Quick Guide & Help Button -->
+      <button onclick="openShortcutsModal()" title="Quick Guide & Keyboard Shortcuts (?)" aria-label="Quick Guide and Help" class="h-8 px-2.5 rounded-lg flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition">
+        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold text-[11px] flex items-center justify-center">?</span>
+        <span class="hidden sm:inline">Help</span>
+      </button>
+
       <!-- Tools & More Button -->
       <div class="relative" id="main-menu-wrapper">
         <button onclick="toggleMainMenu(event)" title="Workspace Menu" aria-label="Workspace Menu" class="w-8 h-8 rounded-lg flex items-center justify-center btn-surface">
@@ -484,10 +490,6 @@
             <button onclick="openOnboardingModal()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
               <span class="text-zinc-200 text-xs">Quick-Start Guide</span>
               <span class="text-[11px] text-zinc-500">Guide</span>
-            </button>
-            <button onclick="openShortcutsModal()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/[0.05] text-left transition">
-              <span class="text-zinc-200 text-xs">Keyboard Shortcuts</span>
-              <kbd class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-zinc-400 border border-white/[0.08]">?</kbd>
             </button>
           </div>
         </div>
@@ -1046,21 +1048,55 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- MODAL 9: KEYBOARD SHORTCUTS                              -->
+  <!-- MODAL 9: QUICK GUIDE & KEYBOARD SHORTCUTS                -->
   <!-- ======================================================== -->
   <div id="modal-shortcuts" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="studio-modal max-w-sm w-full p-6 space-y-4 font-mono text-sm anim-pop">
+    <div class="studio-modal max-w-lg w-full p-6 space-y-5 text-sm anim-pop">
       <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
-        <span class="font-bold text-white text-base">Keyboard Shortcuts</span>
+        <div class="flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs flex items-center justify-center border border-emerald-500/35">?</span>
+          <span class="font-bold text-white text-base">Quick Guide &amp; Shortcuts</span>
+        </div>
         <button onclick="closeModal('modal-shortcuts')" class="w-8 h-8 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
       </div>
-      <div class="space-y-2.5 text-zinc-200">
-        <div class="flex justify-between items-center"><span>Search / Jump Table</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">Ctrl+K</kbd></div>
-        <div class="flex justify-between items-center"><span>Refresh Schema</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">R</kbd></div>
-        <div class="flex justify-between items-center"><span>Inject Mock Rows</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">Enter</kbd></div>
-        <div class="flex justify-between items-center"><span>View Mermaid Grammar</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">G</kbd></div>
-        <div class="flex justify-between items-center"><span>Fit Diagram to Screen</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">F</kbd></div>
-        <div class="flex justify-between items-center"><span>Zoom Canvas</span><kbd class="px-2.5 py-1 bg-black rounded-lg text-emerald-400 border border-white/10 text-xs">+ / − / 0</kbd></div>
+
+      <!-- 3-Step Workflow -->
+      <div class="space-y-2.5">
+        <div class="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">How to Use Web Studio</div>
+        <div class="grid gap-2 text-xs text-zinc-300">
+          <div class="p-2.5 rounded-lg bg-[#0b100d] border border-white/[0.06]">
+            <span class="font-semibold text-white">1. Pick a Table:</span> Click any table node on the left diagram or use the <span class="text-emerald-300">Target table</span> selector.
+          </div>
+          <div class="p-2.5 rounded-lg bg-[#0b100d] border border-white/[0.06]">
+            <span class="font-semibold text-white">2. Inspect &amp; Preview:</span> Click <span class="text-emerald-300">Inspect</span> to see PK/FK columns, a 3-row Faker sample, and parent dependency order.
+          </div>
+          <div class="p-2.5 rounded-lg bg-[#0b100d] border border-white/[0.06]">
+            <span class="font-semibold text-white">3. Choose Rows &amp; Inject:</span> Type any number (<span class="font-mono text-emerald-300">1–50,000</span>) or use presets, adjust batch/auto-seed via <span class="text-emerald-300">⚙</span>, and click <span class="text-emerald-300">Inject</span>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Legend -->
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="px-2.5 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-200">
+          <span class="font-semibold">Emerald Border:</span> Selected table
+        </div>
+        <div class="px-2.5 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200">
+          <span class="font-semibold">Amber Dashed:</span> Parent FK table
+        </div>
+      </div>
+
+      <!-- Keyboard Shortcuts -->
+      <div class="space-y-2 font-mono">
+        <div class="text-[11px] font-sans font-semibold uppercase tracking-wider text-zinc-400">Keyboard Shortcuts</div>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-zinc-200">
+          <div class="flex justify-between items-center"><span>Jump to Table</span><kbd class="px-2 py-0.5 bg-black rounded text-emerald-400 border border-white/10">Ctrl+K</kbd></div>
+          <div class="flex justify-between items-center"><span>Refresh Schema</span><kbd class="px-2 py-0.5 bg-black rounded text-emerald-400 border border-white/10">R</kbd></div>
+          <div class="flex justify-between items-center"><span>Inject Rows</span><kbd class="px-2 py-0.5 bg-black rounded text-emerald-400 border border-white/10">Enter</kbd></div>
+          <div class="flex justify-between items-center"><span>Mermaid Code</span><kbd class="px-2 py-0.5 bg-black rounded text-emerald-400 border border-white/10">G</kbd></div>
+          <div class="flex justify-between items-center"><span>Fit Diagram</span><kbd class="px-2 py-0.5 bg-black rounded text-emerald-400 border border-white/10">F</kbd></div>
+          <div class="flex justify-between items-center"><span>Zoom Canvas</span><kbd class="px-2 py-0.5 bg-black rounded text-emerald-400 border border-white/10">+ / − / 0</kbd></div>
+        </div>
       </div>
     </div>
   </div>
