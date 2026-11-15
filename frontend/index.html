@@ -700,13 +700,13 @@
             <!-- Lightweight Stepper Input -->
             <div class="flex items-center bg-[#0b100d] border border-white/[0.07] rounded-lg p-0.5">
               <button type="button" onclick="stepRowCount(-500)" class="w-7 h-7 rounded-md hover:bg-white/[0.06] text-zinc-400 hover:text-white font-mono text-sm flex items-center justify-center transition" title="Decrease by 500">−</button>
-              <input id="input-rows" type="number" min="100" max="50000" step="100" value="1000" oninput="syncRowsFromInput(this.value)" class="w-20 text-center bg-transparent border-none text-sm font-mono font-semibold text-emerald-400 focus:outline-none focus:ring-0" />
+              <input id="input-rows" type="number" min="1" max="50000" step="1" value="1000" oninput="syncRowsFromInput(this.value)" class="w-20 text-center bg-transparent border-none text-sm font-mono font-semibold text-emerald-400 focus:outline-none focus:ring-0" />
               <button type="button" onclick="stepRowCount(500)" class="w-7 h-7 rounded-md hover:bg-white/[0.06] text-zinc-400 hover:text-white font-mono text-sm flex items-center justify-center transition" title="Increase by 500">+</button>
             </div>
           </div>
 
           <!-- Smooth Emerald Range Slider -->
-          <input id="slider-rows" type="range" min="100" max="50000" step="100" value="1000" oninput="syncRowsFromSlider(this.value)" class="w-full" />
+          <input id="slider-rows" type="range" min="1" max="50000" step="1" value="1000" oninput="syncRowsFromSlider(this.value)" class="w-full" />
 
           <!-- Quick Preset Pills -->
           <div id="row-preset-group" class="grid grid-cols-4 gap-1.5">
@@ -1427,7 +1427,7 @@
     function syncRowsFromInput(val) {
       let num = parseInt(val, 10);
       if (isNaN(num)) num = 1000;
-      num = Math.min(50000, Math.max(100, num));
+      num = Math.min(50000, Math.max(1, num));
       document.getElementById('slider-rows').value = num;
       updateRowPresetHighlight(parseInt(val, 10));
       updateInjectButtonLabel();
@@ -1449,7 +1449,7 @@
 
     function stepRowCount(delta) {
       const current = parseInt(document.getElementById('input-rows').value, 10) || 1000;
-      const next = Math.min(50000, Math.max(100, current + delta));
+      const next = Math.min(50000, Math.max(1, current + delta));
       setExactRows(next);
     }
 
@@ -2267,7 +2267,7 @@
     }
 
     async function handleInjectClick() {
-      const rowCount = Math.min(50000, Math.max(100, parseInt(document.getElementById('input-rows').value, 10) || 1000));
+      const rowCount = Math.min(50000, Math.max(1, parseInt(document.getElementById('input-rows').value, 10) || 1000));
       const tableName = document.getElementById('select-table').value;
       if (!tableName) return;
 
