@@ -42,6 +42,10 @@ You can use it in two ways:
 
 Everything stays on your computer. Nothing is sent to the internet.
 
+### Why I Built This
+
+When I first started using PostgreSQL for my university **Advanced Database Management Systems** course labs, I kept running into the same two slowdowns: tracing how tables and foreign keys connected across growing schemas, and filling tables with realistic test rows without hitting foreign-key or unique-constraint errors. I built **Structura Forge** to turn that manual guesswork into a fast, visual local workflow.
+
 ---
 
 ## Features
@@ -57,17 +61,31 @@ Everything stays on your computer. Nothing is sent to the internet.
 
 ---
 
-## Screenshots
+## Interface Preview
 
-### Web Studio
-| Table Diagram with Highlighted Links | Adding Test Rows |
-| :---: | :---: |
-| <img src="frontend/assets/screenshots/web-studio-erd.png" alt="Web Studio table diagram" width="100%" /> | <img src="frontend/assets/screenshots/web-studio-seeder.png" alt="Web Studio adding rows" width="100%" /> |
+### Web Studio (`http://localhost:8000`)
+
+**Interactive Table Diagram & Parent-FK Highlighting**
+<p align="center">
+  <img src="frontend/assets/screenshots/web-studio-erd.png" alt="Web Studio table diagram with parent foreign key highlighting" width="100%" />
+</p>
+
+**Batch Data Injection & Committed Telemetry**
+<p align="center">
+  <img src="frontend/assets/screenshots/web-studio-seeder.png" alt="Web Studio batch data injection and telemetry" width="100%" />
+</p>
 
 ### Terminal App (TUI)
-| Main Menu | Table Tree & Adding Rows |
-| :---: | :---: |
-| <img src="frontend/assets/screenshots/tui-control-deck.png" alt="TUI main menu" width="100%" /> | <img src="frontend/assets/screenshots/tui-tree-seeder.png" alt="TUI table tree and seeding" width="100%" /> |
+
+**Control Deck & Live Connection Status**
+<p align="center">
+  <img src="frontend/assets/screenshots/tui-control-deck.png" alt="TUI main control deck" width="100%" />
+</p>
+
+**Schema Architecture Tree & High-Velocity Seeder**
+<p align="center">
+  <img src="frontend/assets/screenshots/tui-tree-seeder.png" alt="TUI schema tree and batch seeder" width="100%" />
+</p>
 
 ---
 
