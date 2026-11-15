@@ -172,7 +172,6 @@ Open `http://localhost:8000` in your browser.
 structura-forge/
 ├── structura.py                # Unified CLI & Terminal interface
 ├── requirements.txt            # Python dependencies
-├── specs.md                    # Technical specification & architecture
 ├── erd_blueprint.md            # Exported Mermaid entity diagram
 ├── .env.example               # Environment variables template
 ├── LICENSE                     # MIT License
